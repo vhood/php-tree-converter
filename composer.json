@@ -1,0 +1,20 @@
+{
+    "name": "vhood/array-tree",
+    "description": "native arrays tree structure transformer",
+    "version": "0.0.1",
+    "type": "library",
+    "license": "BSD-2 Clause",
+    "autoload": {
+        "psr-4": {
+            "Vhood\\ArrayTree\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Viktor Khramov",
+            "email": "dev.999.victor@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
