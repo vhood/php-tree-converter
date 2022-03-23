@@ -3,9 +3,9 @@
 namespace Tests;
 
 use PHPUnit\Framework\TestCase;
-use Vhood\TreeType\NestedSet;
+use Vhood\TreeType\Tree;
 
-class NestedSetTest extends TestCase
+class TreeTest extends TestCase
 {
     protected $tree;
     protected $al;
@@ -20,12 +20,15 @@ class NestedSetTest extends TestCase
         $this->mp = require 'data/materialized-path.php';
         $this->ns = require 'data/nested-set.php';
 
-        $this->converter = new NestedSet($this->ns);
+        $this->converter = new Tree($this->tree);
     }
 
     public function testConvertToTree()
     {
-        $this->assertTrue(true);
+        $this->assertSame(
+            json_encode($this->tree),
+            json_encode($this->converter->toTree())
+        );
     }
 
     public function testConvertToAL()
@@ -40,9 +43,6 @@ class NestedSetTest extends TestCase
 
     public function testConvertToNS()
     {
-        $this->assertSame(
-            json_encode($this->ns),
-            json_encode($this->converter->toNestedSet())
-        );
+        $this->assertTrue(true);
     }
 }

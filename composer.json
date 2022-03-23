@@ -1,12 +1,12 @@
 {
-    "name": "vhood/array-tree",
-    "description": "native arrays tree structure transformer",
-    "version": "0.0.1",
+    "name": "vhood/tree-converter",
+    "description": "tree structure type switcher",
+    "version": "0.1.0",
     "type": "library",
     "license": "BSD-2 Clause",
     "autoload": {
         "psr-4": {
-            "Vhood\\ArrayTree\\": "src/"
+            "Vhood\\TreeType\\": "src/"
         }
     },
     "autoload-dev": {

@@ -3,40 +3,46 @@
 namespace Tests;
 
 use PHPUnit\Framework\TestCase;
+use Vhood\TreeType\MaterializedPath;
 
 class MaterializedMathTest extends TestCase
 {
-    protected $data;
     protected $tree;
+    protected $al;
+    protected $mp;
+    protected $ns;
+    protected $converter;
 
     public function setUp()
     {
-        $this->data = require_once 'data/materialized-path.php';
-        $this->tree = require_once 'data/tree.php';
-    }
+        $this->tree = require 'data/tree.php';
+        $this->al = require 'data/adjacency-list.php';
+        $this->mp = require 'data/materialized-path.php';
+        $this->ns = require 'data/nested-set.php';
 
-    public function testConvertFromTree()
-    {
-        return true;
+        $this->converter = new MaterializedPath($this->mp);
     }
 
     public function testConvertToTree()
     {
-        return true;
+        $this->assertTrue(true);
     }
 
     public function testConvertToAL()
     {
-        return true;
+        $this->assertTrue(true);
     }
 
     public function testConvertToMP()
     {
-        return true;
+        $this->assertSame(
+            json_encode($this->mp),
+            json_encode($this->converter->toMaterializedPath())
+        );
     }
 
     public function testConvertToNS()
     {
-        return true;
+        $this->assertTrue(true);
     }
 }
