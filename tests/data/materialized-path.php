@@ -3,22 +3,22 @@
 return [
     [
         'id' => 1,
-        'path' => '/',
         'name' => 'first',
+        'path' => '/',
     ],
     [
         'id' => 2,
-        'path' => '/first/',
         'name' => 'second',
+        'path' => '/1/',
     ],
     [
         'id' => 3,
-        'path' => '/',
         'name' => 'third',
+        'path' => '/',
     ],
     [
         'id' => 4,
-        'path' => '/first/second/',
         'name' => 'fourth',
+        'path' => '/1/2/',
     ],
 ];

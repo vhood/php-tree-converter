@@ -31,6 +31,7 @@ composer require vhood/tree-converter
 Available methods:
 
 - `AjacencyList::toTree()`
+- `AjacencyList::toMaterializedPath()`
 
 Usage example:
 
