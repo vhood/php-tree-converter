@@ -36,21 +36,20 @@ class AjacencyList implements TypeConverter
 
     public function toTree($childrenKey = 'children')
     {
-        $fnBuildTree = function ($node, $requestFromParentId = null) use (&$fnBuildTree, $childrenKey) {
+        $fnBuildTree = function ($nodes, $parentNode = null) use (&$fnBuildTree, $childrenKey) {
             $tree = [];
 
-            foreach ($node as $data) {
-                $thisNodeHaveNoParent = empty($requestFromParentId)
-                    && empty($data[$this->parentIdField]);
+            foreach ($nodes as $node) {
+                $thisNodeHasNoParent = !($parentNode || $node[$this->parentIdField]);
 
-                $isRequestedChild = !empty($requestFromParentId)
-                    && !empty($data[$this->parentIdField])
-                    && $data[$this->parentIdField] == $requestFromParentId;
+                $isRequestedChild = $parentNode
+                    && $node[$this->parentIdField]
+                    && $node[$this->parentIdField] == $parentNode[$this->idField];
 
-                if ($thisNodeHaveNoParent || $isRequestedChild) {
-                    $data[$childrenKey] = $fnBuildTree($node, $data[$this->idField]);
-                    unset($data[$this->parentIdField]);
-                    $tree[] = $data;
+                if ($thisNodeHasNoParent || $isRequestedChild) {
+                    $node[$childrenKey] = $fnBuildTree($nodes, $node);
+                    unset($node[$this->parentIdField]);
+                    $tree[] = $node;
                 }
             }
 
@@ -62,31 +61,92 @@ class AjacencyList implements TypeConverter
 
     public function toMaterializedPath($pathKey = 'path', $separator = '/')
     {
-        $fnBuildPath = function ($node) use (&$fnBuildPath, $separator) {
+        $fnBuildPath = function ($currentNode) use (&$fnBuildPath, $separator) {
             $path = $separator;
 
-            foreach ($this->data as $data) {
-                if ($node[$this->parentIdField] !== $data[$this->idField]) {
+            foreach ($this->data as $node) {
+                if ($currentNode[$this->parentIdField] !== $node[$this->idField]) {
                     continue;
                 }
 
-                $path .= $data[$this->idField];
-                $path .= $fnBuildPath($data);
+                $path .= $node[$this->idField];
+                $path .= $fnBuildPath($node);
             }
 
             return implode($separator, array_reverse(explode($separator, $path)));
         };
 
-        return array_map(function ($data) use ($fnBuildPath, $pathKey) {
-            $data[$pathKey] = $fnBuildPath($data);
-            unset($data[$this->parentIdField]);
+        return array_map(function ($node) use ($fnBuildPath, $pathKey) {
+            $node[$pathKey] = $fnBuildPath($node);
+            unset($node[$this->parentIdField]);
 
-            return $data;
+            return $node;
         }, $this->data);
     }
 
-    public function toNestedSet()
+    public function toNestedSet($leftFieldKey = 'lft', $rightFieldKey = 'rgt')
     {
-        return [];
+        $fnCalculateChildrenLength = function($parentNode) use (&$fnCalculateChildrenLength) {
+            $children = 0;
+
+            foreach ($this->data as $node) {
+                if ($node[$this->parentIdField] !== $parentNode[$this->idField]) {
+                    continue;
+                }
+
+                $children++;
+                $children += $fnCalculateChildrenLength($node);
+            }
+
+            return $children;
+        };
+
+        $fnBuildNestedSet = function ($nodes, $parentNode = null) use (
+            &$fnBuildNestedSet,
+            $fnCalculateChildrenLength,
+            $leftFieldKey,
+            $rightFieldKey
+        ) {
+            $ns = [];
+
+            $left = $parentNode ? $parentNode[$leftFieldKey] + 1 : 1;
+
+            foreach ($nodes as $node) {
+                $isFirstLevelNode = !$node[$this->parentIdField];
+
+                if (!$isFirstLevelNode && !$parentNode) {
+                    continue;
+                }
+
+                $childrenLength = $fnCalculateChildrenLength($node) * 2;
+
+                $right = $left + $childrenLength + 1;
+
+                $node[$leftFieldKey] = $left;
+                $node[$rightFieldKey] = $right;
+
+                unset($node[$this->parentIdField]);
+
+                $ns[] = $node;
+
+                $left = $right + 1;
+
+                if ($childrenLength) {
+                    $children = array_filter($this->data, function($currentNode) use ($node) {
+                        return $currentNode[$this->parentIdField] === $node[$this->idField];
+                    });
+
+                    $ns = array_merge($ns, $fnBuildNestedSet($children, $node));
+                }
+            }
+
+            usort($ns, function($firstNode, $secondNode) {
+                return $firstNode[$this->idField] > $secondNode[$this->idField];
+            });
+
+            return $ns;
+        };
+
+        return $fnBuildNestedSet($this->data);
     }
 }

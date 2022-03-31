@@ -3,26 +3,26 @@
 return [
     [
         'id' => 1,
-        'lft' => 1,
-        'rgt' => 7,
         'name' => 'first',
+        'lft' => 1,
+        'rgt' => 6,
     ],
     [
         'id' => 2,
+        'name' => 'second',
         'lft' => 2,
         'rgt' => 5,
-        'name' => 'second',
     ],
     [
         'id' => 3,
-        'lft' => 3,
-        'rgt' => 4,
         'name' => 'third',
+        'lft' => 7,
+        'rgt' => 8,
     ],
     [
         'id' => 4,
-        'lft' => 5,
-        'rgt' => 6,
         'name' => 'fourth',
+        'lft' => 3,
+        'rgt' => 4,
     ],
 ];
