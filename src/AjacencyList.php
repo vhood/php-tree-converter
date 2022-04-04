@@ -62,22 +62,23 @@ class AjacencyList implements TypeConverter
     public function toMaterializedPath($pathKey = 'path', $separator = '/')
     {
         $fnBuildPath = function ($currentNode) use (&$fnBuildPath, $separator) {
-            $path = $separator;
+            $path = '';
 
             foreach ($this->data as $node) {
                 if ($currentNode[$this->parentIdField] !== $node[$this->idField]) {
                     continue;
                 }
 
-                $path .= $node[$this->idField];
                 $path .= $fnBuildPath($node);
             }
 
-            return implode($separator, array_reverse(explode($separator, $path)));
+            $path .= $separator . $currentNode[$this->idField];
+
+            return $path;
         };
 
-        return array_map(function ($node) use ($fnBuildPath, $pathKey) {
-            $node[$pathKey] = $fnBuildPath($node);
+        return array_map(function ($node) use ($fnBuildPath, $pathKey, $separator) {
+            $node[$pathKey] = $fnBuildPath($node) . $separator;
             unset($node[$this->parentIdField]);
 
             return $node;
