@@ -3,22 +3,22 @@
 return [
     [
         'id' => 1,
-        'parent_id' => 0,
         'name' => 'first',
+        'parent_id' => 0,
     ],
     [
         'id' => 2,
-        'parent_id' => 1,
         'name' => 'second',
+        'parent_id' => 1,
     ],
     [
         'id' => 3,
-        'parent_id' => 0,
         'name' => 'third',
+        'parent_id' => 0,
     ],
     [
         'id' => 4,
-        'parent_id' => 2,
         'name' => 'fourth',
+        'parent_id' => 2,
     ],
 ];

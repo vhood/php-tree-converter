@@ -33,7 +33,10 @@ class MaterializedMathTest extends TestCase
 
     public function testConvertToAL()
     {
-        $this->assertTrue(true);
+        $this->assertSame(
+            json_encode($this->al),
+            json_encode($this->converter->toAjacencyList())
+        );
     }
 
     public function testConvertToMP()
