@@ -92,8 +92,85 @@ class MaterializedPath implements TypeConverter
         return $al;
     }
 
-    public function toNestedSet()
+    public function toNestedSet($leftFieldKey = 'lft', $rightFieldKey = 'rgt')
     {
-        return [];
+        $fnBuildNestedSet = function ($nodes, $parentNode = null) use (
+            &$fnBuildNestedSet,
+            $leftFieldKey,
+            $rightFieldKey
+        ) {
+            $ns = [];
+
+            $left = $parentNode ? $parentNode[$leftFieldKey] + 1 : 1;
+
+            foreach ($nodes as $node) {
+                $isFirstLevelNode = count(array_filter(explode($this->pathSeparator, $node[$this->pathKey]))) < 2;
+
+                if (!$isFirstLevelNode && !$parentNode) {
+                    continue;
+                }
+
+                $childrenLength = count(array_filter($this->data, function ($currentNode) use ($node) {
+                    return $node[$this->pathKey] !== $currentNode[$this->pathKey]
+                        && $node[$this->pathKey] === substr(
+                            $currentNode[$this->pathKey],
+                            0,
+                            strlen($node[$this->pathKey])
+                        );
+                })) * 2;
+
+                $right = $left + $childrenLength + 1;
+
+                $node[$leftFieldKey] = $left;
+                $node[$rightFieldKey] = $right;
+
+                $nodePath = $node[$this->pathKey];
+                $ns[] = $node;
+
+                if ($childrenLength) {
+                    $children = array_filter($this->data, function ($currentNode) use ($nodePath) {
+                        $parentPath = preg_replace(
+                            sprintf("/(.+)%s[^$]/m", preg_quote($this->pathSeparator, '/')),
+                            "$1",
+                            $currentNode[$this->pathKey]
+                        );
+
+                        return $nodePath !== $currentNode[$this->pathKey] && $nodePath === $parentPath;
+                    });
+
+                    $ns = array_merge($ns, $fnBuildNestedSet($children, $node));
+                }
+
+                $left = $right + 1;
+            }
+
+            return $ns;
+        };
+
+        $nestedSet = $fnBuildNestedSet($this->data);
+
+        uasort($nestedSet, function($firstNode, $secondNode) {
+            $nodeIdRegexp = "/.*%s(.*)%s/";
+            $escapedSeparator = preg_quote($this->pathSeparator, '/');
+
+            $firstNodeId = preg_replace(
+                sprintf($nodeIdRegexp, $escapedSeparator, $escapedSeparator),
+                '$1',
+                $firstNode[$this->pathKey]
+            );
+
+            $secondNodeId = preg_replace(
+                sprintf($nodeIdRegexp, $escapedSeparator, $escapedSeparator),
+                '$1',
+                $secondNode[$this->pathKey]
+            );
+
+            return $firstNodeId > $secondNodeId;
+        });
+
+        return array_values(array_map(function($node) {
+            unset($node[$this->pathKey]);
+            return $node;
+        }, $nestedSet));
     }
 }

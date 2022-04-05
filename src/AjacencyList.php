@@ -87,7 +87,7 @@ class AjacencyList implements TypeConverter
 
     public function toNestedSet($leftFieldKey = 'lft', $rightFieldKey = 'rgt')
     {
-        $fnCalculateChildrenLength = function($parentNode) use (&$fnCalculateChildrenLength) {
+        $fnCalculateChildrenLength = function ($parentNode) use (&$fnCalculateChildrenLength) {
             $children = 0;
 
             foreach ($this->data as $node) {
@@ -133,7 +133,7 @@ class AjacencyList implements TypeConverter
                 $left = $right + 1;
 
                 if ($childrenLength) {
-                    $children = array_filter($this->data, function($currentNode) use ($node) {
+                    $children = array_filter($this->data, function ($currentNode) use ($node) {
                         return $currentNode[$this->parentIdField] === $node[$this->idField];
                     });
 
