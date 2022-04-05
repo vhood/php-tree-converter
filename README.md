@@ -33,6 +33,9 @@ Available methods:
 - `AjacencyList::toTree()`
 - `AjacencyList::toMaterializedPath()`
 - `AjacencyList::toNestedSet()`
+- `MaterializedPath::toTree()`
+- `MaterializedPath::toAjacencyList()`
+- `MaterializedPath::toNestedSet()`
 
 Usage example:
 
