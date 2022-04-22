@@ -25,7 +25,10 @@ class NestedSetTest extends TestCase
 
     public function testConvertToTree()
     {
-        $this->assertTrue(true);
+        $this->assertSame(
+            json_encode($this->tree),
+            json_encode($this->converter->toTree())
+        );
     }
 
     public function testConvertToAL()
