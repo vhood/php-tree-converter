@@ -82,13 +82,82 @@ class NestedSet implements TypeConverter
         return $fnBuildTree($this->data);
     }
 
-    public function toAjacencyList()
+    public function toAjacencyList($idField = 'id', $parentIdField = 'parent_id')
     {
-        return [];
+        $nsWithIds = $al = [];
+
+        $id = 1;
+        foreach ($this->data as $node) {
+            $node[$idField] = array_key_exists($idField, $node) ? $node[$idField] : $id;
+            $id++;
+            $nsWithIds[] = $node;
+        }
+
+        foreach ($nsWithIds as $node) {
+            $parents = array_filter($nsWithIds, function ($currentNode) use ($node) {
+                return $currentNode[$this->leftIdField] < $node[$this->leftIdField]
+                    && $currentNode[$this->rightIdField] > $node[$this->rightIdField];
+            });
+
+            $haveParent = !empty($parents);
+            $immediateParent = null;
+
+            if ($haveParent) {
+                uasort($parents, function($first, $second) {
+                    return $first[$this->leftIdField] < $second[$this->leftIdField];
+                });
+                $immediateParent = array_shift($parents);
+            }
+
+            $node[$parentIdField] = $haveParent ? $immediateParent[$idField] : 0;
+            unset($node[$this->leftIdField]);
+            unset($node[$this->rightIdField]);
+            $al[] = $node;
+        }
+
+        return $al;
     }
 
-    public function toMaterializedPath()
+    public function toMaterializedPath($pathKey = 'path', $separator = '/', $nsIdField = null)
     {
-        return [];
+        $nsWithIds = $this->data;
+        if (!$nsIdField) {
+            $nsWithIds = [];
+            $nsIdField = 'id';
+            $id = 1;
+            foreach ($this->data as $node) {
+                $node[$nsIdField] = array_key_exists($nsIdField, $node) ? $node[$nsIdField] : $id;
+                $id++;
+                $nsWithIds[] = $node;
+            }
+        }
+
+        $mp = [];
+        foreach ($nsWithIds as $node) {
+            $parents = array_filter($this->data, function ($currentNode) use ($node) {
+                return $currentNode[$this->leftIdField] < $node[$this->leftIdField]
+                    && $currentNode[$this->rightIdField] > $node[$this->rightIdField];
+            });
+
+            $parentsPath = null;
+            if (!empty($parents)) {
+                uasort($parents, function($first, $second) {
+                    return $first[$this->leftIdField] > $second[$this->leftIdField];
+                });
+                $parentsPath = implode($separator, array_map(function ($currentNode) use ($nsIdField) {
+                    return $currentNode[$nsIdField];
+                }, $parents));
+            }
+
+            $node[$pathKey] = $parentsPath ? sprintf('%s%s', $separator, $parentsPath) : '';
+            $node[$pathKey] .= sprintf('%s%s%s', $separator, $node[$nsIdField], $separator);
+
+            unset($node[$this->leftIdField]);
+            unset($node[$this->rightIdField]);
+
+            $mp[] = $node;
+        }
+
+        return $mp;
     }
 }
