@@ -21,9 +21,47 @@ class Tree implements TypeConverter
         return $this->data;
     }
 
-    public function toAjacencyList()
+    public function toAjacencyList($idField = 'id', $parentIdField = 'parent_id', $noParentValue = 0)
     {
-        return [];
+        $idExists = array_key_exists($idField, current($this->data));
+
+        $fnBuildAjacencyList = function ($nodes, $parentNode = null) use (
+            &$fnBuildAjacencyList,
+            $idField,
+            $parentIdField,
+            $noParentValue,
+            $idExists
+        ) {
+            $al = [];
+
+            $id = 1;
+            foreach ($nodes as $node) {
+                if (!$idExists) {
+                    $node[$idField] = $id;
+                }
+
+                $node[$parentIdField] = $parentNode
+                    ? $parentNode[$idField]
+                    : $noParentValue;
+
+                if (!empty($node[$this->childrenField])) {
+                    $al = array_merge($al, $fnBuildAjacencyList($node[$this->childrenField], $node));
+                }
+                unset($node[$this->childrenField]);
+                $al[] = $node;
+
+                $id++;
+            }
+
+            return $al;
+        };
+
+        $ajacencyList = $fnBuildAjacencyList($this->data);
+        usort($ajacencyList, function ($first, $second) use ($idField) {
+            return $first[$idField] > $second[$idField];
+        });
+
+        return $ajacencyList;
     }
 
     public function toMaterializedPath()

@@ -39,6 +39,7 @@ Available methods:
 - `NestedSet::toTree()`
 - `NestedSet::toAjacencyList()`
 - `NestedSet::toMaterializedPath()`
+- `Tree::toAjacencyList()`
 
 Usage example:
 
