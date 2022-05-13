@@ -82,7 +82,7 @@ class NestedSet implements TypeConverter
         return $fnBuildTree($this->data);
     }
 
-    public function toAjacencyList($idField = 'id', $parentIdField = 'parent_id')
+    public function toAjacencyList($idField = 'id', $parentIdField = 'parent_id', $noParentValue = 0)
     {
         $nsWithIds = $al = [];
 
@@ -109,7 +109,7 @@ class NestedSet implements TypeConverter
                 $immediateParent = array_shift($parents);
             }
 
-            $node[$parentIdField] = $haveParent ? $immediateParent[$idField] : 0;
+            $node[$parentIdField] = $haveParent ? $immediateParent[$idField] : $noParentValue;
             unset($node[$this->leftIdField]);
             unset($node[$this->rightIdField]);
             $al[] = $node;
