@@ -24,9 +24,11 @@ class Tree implements TypeConverter
     public function toAjacencyList($idField = 'id', $parentIdField = 'parent_id', $noParentValue = 0)
     {
         $idExists = array_key_exists($idField, current($this->data));
+        $id = 1;
 
         $fnBuildAjacencyList = function ($nodes, $parentNode = null) use (
             &$fnBuildAjacencyList,
+            &$id,
             $idField,
             $parentIdField,
             $noParentValue,
@@ -34,10 +36,10 @@ class Tree implements TypeConverter
         ) {
             $al = [];
 
-            $id = 1;
             foreach ($nodes as $node) {
                 if (!$idExists) {
                     $node[$idField] = $id;
+                    $id++;
                 }
 
                 $node[$parentIdField] = $parentNode
@@ -49,8 +51,6 @@ class Tree implements TypeConverter
                 }
                 unset($node[$this->childrenField]);
                 $al[] = $node;
-
-                $id++;
             }
 
             return $al;
@@ -64,9 +64,54 @@ class Tree implements TypeConverter
         return $ajacencyList;
     }
 
-    public function toMaterializedPath()
+    public function toMaterializedPath($existedIdField = 'id', $pathKey = 'path', $separator = '/')
     {
-        return [];
+        $idExists = $existedIdField ? array_key_exists($existedIdField, current($this->data)) : false;
+        $idField = $existedIdField && $idExists ? $existedIdField : 'id';
+
+        $mp = [];
+        $id = 1;
+        $fnBuildPath = function ($node, $parentNode = null) use (
+            &$fnBuildPath,
+            &$mp,
+            &$id,
+            $idExists,
+            $idField,
+            $pathKey,
+            $separator
+        ) {
+            if (!$idExists) {
+                $node[$idField] = $id;
+                $id++;
+            }
+
+            $node[$pathKey] = $parentNode
+                ? sprintf('%s%s%s', $parentNode[$pathKey], $separator, $node[$idField])
+                : sprintf($node[$idField]);
+
+            if (!empty($node[$this->childrenField])) {
+                foreach ($node[$this->childrenField] as $child) {
+                    $fnBuildPath($child, $node);
+                }
+            }
+
+            unset($node[$this->childrenField]);
+
+            $mp[] = $node;
+        };
+
+        foreach ($this->data as $node) {
+            $fnBuildPath($node);
+        }
+
+        usort($mp, function ($first, $second) use ($idField) {
+            return $first[$idField] > $second[$idField];
+        });
+
+        return array_map(function ($node) use ($pathKey, $separator) {
+            $node[$pathKey] = sprintf('%s%s%s', $separator, $node[$pathKey], $separator);
+            return $node;
+        }, $mp);
     }
 
     public function toNestedSet()

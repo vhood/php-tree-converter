@@ -1,6 +1,6 @@
 # PHP Tree Type Converters
 
-[![tests](https://img.shields.io/github/workflow/status/vhood/php-tree-converter/tests)](/actions)
+[![tests](https://img.shields.io/github/workflow/status/vhood/php-tree-converter/tests)](https://github.com/vhood/php-tree-converter/actions)
 [![version](https://img.shields.io/packagist/v/vhood/tree-converter)](https://packagist.org/packages/vhood/tree-converter)
 [![downloads](https://img.shields.io/packagist/dt/vhood/tree-converter)](https://packagist.org/packages/vhood/tree-converter)
 [![license](https://img.shields.io/github/license/vhood/php-tree-converter)](/LICENSE)
@@ -40,6 +40,7 @@ Available methods:
 - `NestedSet::toAjacencyList()`
 - `NestedSet::toMaterializedPath()`
 - `Tree::toAjacencyList()`
+- `Tree::toMaterializedPath()`
 
 Usage example:
 

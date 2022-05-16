@@ -41,7 +41,10 @@ class TreeTest extends TestCase
 
     public function testConvertToMP()
     {
-        $this->assertTrue(true);
+        $this->assertSame(
+            json_encode($this->mp),
+            json_encode($this->converter->toMaterializedPath())
+        );
     }
 
     public function testConvertToNS()
