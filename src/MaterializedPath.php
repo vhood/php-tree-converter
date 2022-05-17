@@ -70,7 +70,7 @@ class MaterializedPath implements TypeConverter
         return $fnBuildTree($this->data);
     }
 
-    public function toAjacencyList($idField = 'id', $parentIdField = 'parent_id', $isIntegerInPath = true)
+    public function toAdjacencyList($idField = 'id', $parentIdField = 'parent_id', $isIntegerInPath = true)
     {
         $al = [];
 

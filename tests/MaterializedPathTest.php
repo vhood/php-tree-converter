@@ -35,7 +35,7 @@ class MaterializedMathTest extends TestCase
     {
         $this->assertSame(
             json_encode($this->al),
-            json_encode($this->converter->toAjacencyList())
+            json_encode($this->converter->toAdjacencyList())
         );
     }
 

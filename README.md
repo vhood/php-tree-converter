@@ -9,7 +9,7 @@ This package based on native php arrays allows you to switch a tree type.
 
 Supported types:
 
-- Ajacency list
+- Adjacency list
 - Materialized path
 - Nested set
 - Associative arrays
@@ -30,27 +30,27 @@ composer require vhood/tree-converter
 
 Available methods:
 
-- `AjacencyList::toTree()`
-- `AjacencyList::toMaterializedPath()`
-- `AjacencyList::toNestedSet()`
+- `AdjacencyList::toTree()`
+- `AdjacencyList::toMaterializedPath()`
+- `AdjacencyList::toNestedSet()`
 - `MaterializedPath::toTree()`
-- `MaterializedPath::toAjacencyList()`
+- `MaterializedPath::toAdjacencyList()`
 - `MaterializedPath::toNestedSet()`
 - `NestedSet::toTree()`
-- `NestedSet::toAjacencyList()`
+- `NestedSet::toAdjacencyList()`
 - `NestedSet::toMaterializedPath()`
-- `Tree::toAjacencyList()`
+- `Tree::toAdjacencyList()`
 - `Tree::toMaterializedPath()`
 - `Tree::toNestedSet()`
 
 Usage example:
 
 ```php
-use Vhood\TreeType\AjacencyList;
+use Vhood\TreeType\AdjacencyList;
 
 $flatTree = require 'adjacency-list.php';
 
-$converter = new AjacencyList($flatTree);
+$converter = new AdjacencyList($flatTree);
 $associativeArrayTree = $converter->toTree();
 ```
 

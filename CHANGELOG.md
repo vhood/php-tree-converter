@@ -23,15 +23,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Associative array tree to ajacency list convertion
-- Associative array tree to ajacency list convertion test
+- Associative array tree to adjacency list convertion
+- Associative array tree to adjacency list convertion test
 - `$noParentValue` parameter for NS to AL convertion
 
 ## [0.6.0] - 2022-04-22
 
 ### Added
 
-- Nested set to ajacency list convertion
+- Nested set to adjacency list convertion
 - Nested set to materialized path convertion
 - Nested set convertion tests
 
@@ -46,7 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Materialized path to ajacency list convertion
+- Materialized path to adjacency list convertion
 - Materialized path to nested set convertion
 - Materialized path to associative array tree convertion
 - Materialized path convertion tests
@@ -54,21 +54,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - materialized path data example
-- Ajacency list to materialized path convertion
+- Adjacency list to materialized path convertion
 
 ## [0.3.0] - 2022-03-31
 
 ### Added
 
-- Ajacency list to nested set convertion
-- Ajacency list to nested set convertion test
+- Adjacency list to nested set convertion
+- Adjacency list to nested set convertion test
 
 ## [0.2.0] - 2022-03-29
 
 ### Added
 
-- Ajacency list to materialized path convertion
-- Ajacency list to materialized path convertion test
+- Adjacency list to materialized path convertion
+- Adjacency list to materialized path convertion test
 
 ## [0.1.1] - 2022-03-23
 
@@ -80,8 +80,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Ajacency list to associative array tree convertion
-- Ajacency list to associative array tree convertion test
+- Adjacency list to associative array tree convertion
+- Adjacency list to associative array tree convertion test
 - Same type convertion tests
 - Green line tests for other convertions
 - Source structure

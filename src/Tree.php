@@ -21,13 +21,13 @@ class Tree implements TypeConverter
         return $this->data;
     }
 
-    public function toAjacencyList($idField = 'id', $parentIdField = 'parent_id', $noParentValue = 0)
+    public function toAdjacencyList($idField = 'id', $parentIdField = 'parent_id', $noParentValue = 0)
     {
         $idExists = array_key_exists($idField, current($this->data));
         $id = 1;
 
-        $fnBuildAjacencyList = function ($nodes, $parentNode = null) use (
-            &$fnBuildAjacencyList,
+        $fnBuildAdjacencyList = function ($nodes, $parentNode = null) use (
+            &$fnBuildAdjacencyList,
             &$id,
             $idField,
             $parentIdField,
@@ -47,7 +47,7 @@ class Tree implements TypeConverter
                     : $noParentValue;
 
                 if (!empty($node[$this->childrenField])) {
-                    $al = array_merge($al, $fnBuildAjacencyList($node[$this->childrenField], $node));
+                    $al = array_merge($al, $fnBuildAdjacencyList($node[$this->childrenField], $node));
                 }
                 unset($node[$this->childrenField]);
                 $al[] = $node;
@@ -56,12 +56,12 @@ class Tree implements TypeConverter
             return $al;
         };
 
-        $ajacencyList = $fnBuildAjacencyList($this->data);
-        usort($ajacencyList, function ($first, $second) use ($idField) {
+        $adjacencyList = $fnBuildAdjacencyList($this->data);
+        usort($adjacencyList, function ($first, $second) use ($idField) {
             return $first[$idField] > $second[$idField];
         });
 
-        return $ajacencyList;
+        return $adjacencyList;
     }
 
     public function toMaterializedPath($existedIdField = 'id', $pathKey = 'path', $separator = '/')
