@@ -49,6 +49,9 @@ class TreeTest extends TestCase
 
     public function testConvertToNS()
     {
-        $this->assertTrue(true);
+        $this->assertSame(
+            json_encode($this->ns),
+            json_encode($this->converter->toNestedSet())
+        );
     }
 }

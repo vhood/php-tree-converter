@@ -114,8 +114,65 @@ class Tree implements TypeConverter
         }, $mp);
     }
 
-    public function toNestedSet()
+    public function toNestedSet($leftFieldKey = 'lft', $rightFieldKey = 'rgt', $existedIdField = 'id')
     {
-        return [];
+        $idExists = $existedIdField ? array_key_exists($existedIdField, current($this->data)) : false;
+        $idField = $existedIdField && $idExists ? $existedIdField : 'id';
+
+        $fnCalculateChildrenLength = function ($children) use (&$fnCalculateChildrenLength) {
+            if (empty($children)) {
+                return 0;
+            }
+
+            $childrenLength = 0;
+            foreach ($children as $node) {
+                if (!empty($node[$this->childrenField])) {
+                    $childrenLength += $fnCalculateChildrenLength($node[$this->childrenField]);
+                }
+            }
+
+            return $childrenLength + 2;
+        };
+
+        $ns = [];
+        $id = 1;
+        $fnBuildNestedSet = function ($nodes, $lft) use (
+            &$fnBuildNestedSet,
+            &$ns,
+            &$id,
+            $fnCalculateChildrenLength,
+            $leftFieldKey,
+            $rightFieldKey,
+            $idExists,
+            $idField
+        ) {
+            foreach ($nodes as $node) {
+                if (!$idExists) {
+                    $node[$idField] = $id;
+                    $id++;
+                }
+
+                $node[$leftFieldKey] = $lft;
+                $rgt = $lft + $fnCalculateChildrenLength($node[$this->childrenField]) + 1;
+                $node[$rightFieldKey] = $rgt;
+
+                if (!empty($node[$this->childrenField])) {
+                    $fnBuildNestedSet($node[$this->childrenField], $lft + 1);
+                }
+                unset($node[$this->childrenField]);
+
+                $ns[] = $node;
+
+                $lft = $rgt + 1;
+            }
+
+            usort($ns, function ($first, $second) use ($idField) {
+                return $first[$idField] > $second[$idField];
+            });
+
+            return $ns;
+        };
+
+        return $fnBuildNestedSet($this->data, 1);
     }
 }
