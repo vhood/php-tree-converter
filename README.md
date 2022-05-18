@@ -1,6 +1,6 @@
 # PHP Tree Type Converters
 
-[![tests](https://img.shields.io/github/workflow/status/vhood/php-tree-converter/tests)](https://github.com/vhood/php-tree-converter/actions)
+[![tests](https://img.shields.io/github/workflow/status/vhood/php-tree-converter/release)](https://github.com/vhood/php-tree-converter/actions/workflows/release.yml)
 [![version](https://img.shields.io/packagist/v/vhood/tree-converter)](https://packagist.org/packages/vhood/tree-converter)
 [![downloads](https://img.shields.io/packagist/dt/vhood/tree-converter)](https://packagist.org/packages/vhood/tree-converter)
 [![license](https://img.shields.io/github/license/vhood/php-tree-converter)](/LICENSE)
@@ -14,7 +14,7 @@ Supported types:
 - Nested set
 - Associative arrays
 
-See [data example](/tests/data/)
+See **[data example](/tests/data/)**
 
 ## Installation
 
