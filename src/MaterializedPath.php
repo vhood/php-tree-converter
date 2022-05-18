@@ -48,7 +48,11 @@ class MaterializedPath implements TypeConverter
                     && count(array_filter(explode($this->pathSeparator, $node[$this->pathKey]))) < 2;
 
                 $parentPath = preg_replace(
-                    sprintf("/(.+)%s[^$]/m", preg_quote($this->pathSeparator, '/')),
+                    sprintf(
+                        "/(.+%s)\d+%s$/m",
+                        preg_quote($this->pathSeparator, '/'),
+                        preg_quote($this->pathSeparator, '/')
+                    ),
                     "$1",
                     $node[$this->pathKey]
                 );
@@ -130,7 +134,11 @@ class MaterializedPath implements TypeConverter
                 if ($childrenLength) {
                     $children = array_filter($this->data, function ($currentNode) use ($nodePath) {
                         $parentPath = preg_replace(
-                            sprintf("/(.+)%s[^$]/m", preg_quote($this->pathSeparator, '/')),
+                            sprintf(
+                                "/(.+%s)\d+%s$/m",
+                                preg_quote($this->pathSeparator, '/'),
+                                preg_quote($this->pathSeparator, '/')
+                            ),
                             "$1",
                             $currentNode[$this->pathKey]
                         );
