@@ -119,28 +119,15 @@ class Tree implements TypeConverter
         $idExists = $existedIdField ? array_key_exists($existedIdField, current($this->data)) : false;
         $idField = $existedIdField && $idExists ? $existedIdField : 'id';
 
-        $fnCalculateChildrenLength = function ($children) use (&$fnCalculateChildrenLength) {
-            if (empty($children)) {
-                return 0;
-            }
-
-            $childrenLength = 0;
-            foreach ($children as $node) {
-                if (!empty($node[$this->childrenField])) {
-                    $childrenLength += $fnCalculateChildrenLength($node[$this->childrenField]);
-                }
-            }
-
-            return $childrenLength + 2;
-        };
-
         $ns = [];
         $id = 1;
+        $definedFiledsAmount = 4;
+
         $fnBuildNestedSet = function ($nodes, $lft) use (
             &$fnBuildNestedSet,
             &$ns,
             &$id,
-            $fnCalculateChildrenLength,
+            $definedFiledsAmount,
             $leftFieldKey,
             $rightFieldKey,
             $idExists,
@@ -153,7 +140,7 @@ class Tree implements TypeConverter
                 }
 
                 $node[$leftFieldKey] = $lft;
-                $rgt = $lft + $fnCalculateChildrenLength($node[$this->childrenField]) + 1;
+                $rgt = (count($node[$this->childrenField], COUNT_RECURSIVE) / $definedFiledsAmount * 2) + $lft + 1;
                 $node[$rightFieldKey] = $rgt;
 
                 if (!empty($node[$this->childrenField])) {
