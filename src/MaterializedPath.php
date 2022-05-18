@@ -70,7 +70,7 @@ class MaterializedPath implements TypeConverter
         return $fnBuildTree($this->data);
     }
 
-    public function toAdjacencyList($idField = 'id', $parentIdField = 'parent_id', $isIntegerInPath = true)
+    public function toAdjacencyList($idField = 'id', $parentIdField = 'parent_id', $isIntegerInPath = true, $noParentValue = 0)
     {
         $al = [];
 
@@ -79,7 +79,7 @@ class MaterializedPath implements TypeConverter
 
             $node[$idField] = $isIntegerInPath ? (int)array_pop($pathList) : array_pop($pathList);
 
-            $node[$parentIdField] = $isIntegerInPath ? 0 : '';
+            $node[$parentIdField] = $noParentValue;
             if (!empty($pathList)) {
                 $node[$parentIdField] = $isIntegerInPath ? (int)array_pop($pathList) : array_pop($pathList);
             }
