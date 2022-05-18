@@ -21,13 +21,13 @@ class Tree implements TypeConverter
         return $this->data;
     }
 
-    public function toAjacencyList($idField = 'id', $parentIdField = 'parent_id', $noParentValue = 0)
+    public function toAdjacencyList($idField = 'id', $parentIdField = 'parent_id', $noParentValue = 0)
     {
         $idExists = array_key_exists($idField, current($this->data));
         $id = 1;
 
-        $fnBuildAjacencyList = function ($nodes, $parentNode = null) use (
-            &$fnBuildAjacencyList,
+        $fnBuildAdjacencyList = function ($nodes, $parentNode = null) use (
+            &$fnBuildAdjacencyList,
             &$id,
             $idField,
             $parentIdField,
@@ -47,7 +47,7 @@ class Tree implements TypeConverter
                     : $noParentValue;
 
                 if (!empty($node[$this->childrenField])) {
-                    $al = array_merge($al, $fnBuildAjacencyList($node[$this->childrenField], $node));
+                    $al = array_merge($al, $fnBuildAdjacencyList($node[$this->childrenField], $node));
                 }
                 unset($node[$this->childrenField]);
                 $al[] = $node;
@@ -56,12 +56,12 @@ class Tree implements TypeConverter
             return $al;
         };
 
-        $ajacencyList = $fnBuildAjacencyList($this->data);
-        usort($ajacencyList, function ($first, $second) use ($idField) {
+        $adjacencyList = $fnBuildAdjacencyList($this->data);
+        usort($adjacencyList, function ($first, $second) use ($idField) {
             return $first[$idField] > $second[$idField];
         });
 
-        return $ajacencyList;
+        return $adjacencyList;
     }
 
     public function toMaterializedPath($existedIdField = 'id', $pathKey = 'path', $separator = '/')
@@ -119,28 +119,15 @@ class Tree implements TypeConverter
         $idExists = $existedIdField ? array_key_exists($existedIdField, current($this->data)) : false;
         $idField = $existedIdField && $idExists ? $existedIdField : 'id';
 
-        $fnCalculateChildrenLength = function ($children) use (&$fnCalculateChildrenLength) {
-            if (empty($children)) {
-                return 0;
-            }
-
-            $childrenLength = 0;
-            foreach ($children as $node) {
-                if (!empty($node[$this->childrenField])) {
-                    $childrenLength += $fnCalculateChildrenLength($node[$this->childrenField]);
-                }
-            }
-
-            return $childrenLength + 2;
-        };
-
         $ns = [];
         $id = 1;
+        $definedFiledsAmount = 4;
+
         $fnBuildNestedSet = function ($nodes, $lft) use (
             &$fnBuildNestedSet,
             &$ns,
             &$id,
-            $fnCalculateChildrenLength,
+            $definedFiledsAmount,
             $leftFieldKey,
             $rightFieldKey,
             $idExists,
@@ -153,7 +140,7 @@ class Tree implements TypeConverter
                 }
 
                 $node[$leftFieldKey] = $lft;
-                $rgt = $lft + $fnCalculateChildrenLength($node[$this->childrenField]) + 1;
+                $rgt = (count($node[$this->childrenField], COUNT_RECURSIVE) / $definedFiledsAmount * 2) + $lft + 1;
                 $node[$rightFieldKey] = $rgt;
 
                 if (!empty($node[$this->childrenField])) {

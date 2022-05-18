@@ -5,7 +5,7 @@ namespace Vhood\TreeType;
 use Vhood\TreeType\Contract\TypeConverter;
 use Vhood\TreeType\Exception\InvalidStructureException;
 
-class AjacencyList implements TypeConverter
+class AdjacencyList implements TypeConverter
 {
     private $data;
     private $idField;
@@ -29,7 +29,7 @@ class AjacencyList implements TypeConverter
         $this->data = array_values($flatTree);
     }
 
-    public function toAjacencyList()
+    public function toAdjacencyList()
     {
         return $this->data;
     }

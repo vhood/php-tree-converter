@@ -3,9 +3,9 @@
 namespace Tests;
 
 use PHPUnit\Framework\TestCase;
-use Vhood\TreeType\MaterializedPath;
+use Vhood\TreeType\AdjacencyList;
 
-class MaterializedPathTest extends TestCase
+class AdjacencyListTest extends TestCase
 {
     protected $tree;
     protected $al;
@@ -37,7 +37,7 @@ class MaterializedPathTest extends TestCase
             return $ns;
         }, $data);
 
-        $this->converter = new MaterializedPath($this->mp);
+        $this->converter = new AdjacencyList($this->al);
     }
 
     public function testConvertToTree()
@@ -52,7 +52,7 @@ class MaterializedPathTest extends TestCase
     {
         $this->assertSame(
             json_encode($this->al),
-            json_encode($this->converter->toAdjacencyList('id', 'parent_id', true, null))
+            json_encode($this->converter->toAdjacencyList())
         );
     }
 
