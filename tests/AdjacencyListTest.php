@@ -15,10 +15,27 @@ class AdjacencyListTest extends TestCase
 
     public function setUp()
     {
-        $this->tree = require 'data/tree.php';
-        $this->al = require 'data/adjacency-list.php';
-        $this->mp = require 'data/materialized-path.php';
-        $this->ns = require 'data/nested-set.php';
+        $this->tree = require 'data/tree/exemplar.php';
+
+        $data = require 'data/num-based-nodes.php';
+
+        $this->al = array_map(function($node) {
+            $al = array_intersect_key($node, ['id' => '', 'name' => '', 'parent_id' => '']);
+            uksort($al, function($k) { return $k !== 'id'; });
+            return $al;
+        }, $data);
+
+        $this->mp = array_map(function($node) {
+            $mp = array_intersect_key($node, ['id' => '', 'name' => '', 'path' => '']);
+            uksort($mp, function($k) { return $k !== 'id'; });
+            return $mp;
+        }, $data);
+
+        $this->ns = array_map(function($node) {
+            $ns = array_intersect_key($node, ['id' => '', 'name' => '', 'lft' => '', 'rgt' => '']);
+            uksort($ns, function($k) { return $k !== 'id'; });
+            return $ns;
+        }, $data);
 
         $this->converter = new AdjacencyList($this->al);
     }
