@@ -2,27 +2,47 @@
 
 namespace Vhood\TreeType\Type;
 
+use Vhood\TreeType\AssociativeArrayTreeConverter;
+use Vhood\TreeType\Contract\TreeType;
+use Vhood\TreeType\Contract\TypeConverter;
 use Vhood\TreeType\Exception\InvalidStructureException;
+use Vhood\TreeType\Service\AssociativeArrayTreeService;
 
-class AssociativeArrayTree
+class AssociativeArrayTree implements TreeType
 {
-    private $data;
-    private $childrenField;
+    private $nodes;
+    private $childrenKey;
+    private $idKey;
 
     /**
      * @param array $tree
-     * @param string $childrenField
+     * @param string $childrenKey
+     * @param null|string $idKey
      * @return void
      * @throws InvalidStructureException
      */
-    public function __construct(array $tree, $childrenField = 'children')
+    public function __construct(array $tree, $childrenKey = 'children', $idKey = null)
     {
-        $this->childrenField = $childrenField;
+        $this->childrenKey = $childrenKey;
+        $this->idKey = $idKey;
 
         if (empty($tree)) {
             throw new InvalidStructureException("Empty tree");
         }
 
-        $this->data = array_values($tree);
+        if ($idKey) {
+            $treeService = new AssociativeArrayTreeService($tree, $childrenKey, $idKey);
+            $treeService->validateIdField($idKey);
+        }
+
+        $this->nodes = array_values($tree);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function initConverter(): TypeConverter
+    {
+        return new AssociativeArrayTreeConverter($this->nodes, $this->childrenKey, $this->idKey);
     }
 }

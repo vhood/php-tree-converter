@@ -4,11 +4,12 @@ namespace Vhood\TreeType\Type;
 
 use Vhood\TreeType\Contract\TreeType;
 use Vhood\TreeType\Contract\TypeConverter;
+use Vhood\TreeType\Converter\AdjacencyListConverter;
 use Vhood\TreeType\Exception\InvalidStructureException;
 
 class AdjacencyList implements TreeType
 {
-    private $data;
+    private $nodes;
     private $idKey;
     private $parentIdKey;
 
@@ -30,6 +31,14 @@ class AdjacencyList implements TreeType
         $this->idKey = $idKey;
         $this->parentIdKey = $parentIdKey;
 
-        $this->data = array_values($flatTree);
+        $this->nodes = array_values($flatTree);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function initConverter(): TypeConverter
+    {
+        return new AdjacencyListConverter($this, $this->nodes, $this->idKey, $this->parentIdKey);
     }
 }
