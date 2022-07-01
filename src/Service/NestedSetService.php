@@ -27,16 +27,19 @@ class NestedSetService
      */
     public function identifyNodes($idKey = 'id')
     {
-        $nestedSet = $this->nodes;
+        $nodes = $this->nodes;
 
-        uasort($nestedSet, function ($firstNode, $secondNode) {
+        uasort($nodes, function ($firstNode, $secondNode) {
             return $firstNode[$this->leftValueKey] > $secondNode[$this->leftValueKey];
         });
 
-        array_walk($nestedSet, function ($node, $id) use ($idKey) {
-            $node[$idKey] = $id;
-        });
+        $result = [];
+        $id = 1;
+        while (!empty($nodes)) {
+            $result[] = array_merge([$idKey => $id], array_shift($nodes));
+            $id++;
+        }
 
-        return $nestedSet;
+        return $result;
     }
 }

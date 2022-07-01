@@ -3,16 +3,16 @@
 namespace Vhood\TreeType\Algorithm;
 
 use Vhood\TreeType\Contract\ConvertionAlgorithm;
-use Vhood\TreeType\Service\DataService;
+use Vhood\TreeType\Service\FlatNodesService;
 
 abstract class TypeCreator implements ConvertionAlgorithm
 {
     /**
      * @param mixed $nodes
-     * @return DataService
+     * @return FlatNodesService
      */
     public function initService($nodes)
     {
-        return new DataService($nodes);
+        return new FlatNodesService($nodes);
     }
 }

@@ -54,11 +54,11 @@ class AssociativeArrayTreeService
     public function identifyNodes($idKey, $recursiveParentNode = null)
     {
         $nodes = $recursiveParentNode ? $recursiveParentNode[$this->childrenKey] : $this->nodes;
-        $id = $recursiveParentNode ? $recursiveParentNode[$idKey]++ : 1;
-        $tree = [];
+        $id = $recursiveParentNode ? $recursiveParentNode[$idKey] + 1 : 1;
 
+        $tree = [];
         foreach ($nodes as $node) {
-            $node[$idKey] = $id;
+            $node = array_merge([$idKey => $id], $node);
 
             if (!empty($node[$this->childrenKey])) {
                 $node[$this->childrenKey] = $this->identifyNodes($idKey, $node);
@@ -68,21 +68,30 @@ class AssociativeArrayTreeService
             $id++;
         }
 
-        return $nodes;
+        return $tree;
     }
 
     /**
      * @param string $fieldKey
+     * @param null|string $recursiveParentNode
      * @return array
      */
-    public function removeTheField($fieldKey)
+    public function removeTheField($fieldKey, $recursiveParentNode = null)
     {
-        $jsonNodes = json_encode($this->nodes);
+        $nodes = $recursiveParentNode ? $recursiveParentNode[$this->childrenKey] : $this->nodes;
 
-        return json_decode(
-            preg_replace(sprintf('/"%s":,?/', $fieldKey), '', $jsonNodes),
-            true
-        );
+        $tree = [];
+        foreach ($nodes as $node) {
+            unset($node[$fieldKey]);
+
+            if (!empty($node[$this->childrenKey])) {
+                $node[$this->childrenKey] = $this->removeTheField($fieldKey, $node);
+            }
+
+            $tree[] = $node;
+        }
+
+        return $tree;
     }
 
     /**

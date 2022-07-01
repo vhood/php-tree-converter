@@ -27,25 +27,18 @@ class MaterializedPathService
      */
     public function identifyNodes($idKey)
     {
-        $materializedPath = $this->nodes;
+        return array_map(function ($node) use ($idKey) {
+            $nodeIdRegexp = "/.*%s(.*)%s/";
+            $escapedSeparator = preg_quote($this->pathSeparator, '/');
 
-        $materializedPath = array_map(
-            function ($node) use ($idKey) {
-                $nodeIdRegexp = "/.*%s(.*)%s/";
-                $escapedSeparator = preg_quote($this->pathSeparator, '/');
+            $node = array_merge([$idKey => preg_replace(
+                sprintf($nodeIdRegexp, $escapedSeparator, $escapedSeparator),
+                '$1',
+                $node[$this->pathKey]
+            )], $node);
 
-                $node[$idKey] = preg_replace(
-                    sprintf($nodeIdRegexp, $escapedSeparator, $escapedSeparator),
-                    '$1',
-                    $node[$this->pathKey]
-                );
-
-                return $node;
-            },
-            $materializedPath
-        );
-
-        return $materializedPath;
+            return $node;
+        }, $this->nodes);
     }
 
     /**
@@ -87,7 +80,7 @@ class MaterializedPathService
     public function calculateLevels($levelKey)
     {
         return array_map(function ($node) use ($levelKey) {
-            $node[$levelKey] = count(explode($this->pathSeparator, $node[$this->pathKey]));
+            $node[$levelKey] = count(array_filter(explode($this->pathSeparator, $node[$this->pathKey])));
 
             return $node;
         }, $this->nodes);
