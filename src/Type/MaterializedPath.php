@@ -3,7 +3,6 @@
 namespace Vhood\TreeType\Type;
 
 use Vhood\TreeType\Contract\TreeType;
-use Vhood\TreeType\Contract\TypeConverter;
 use Vhood\TreeType\Exception\InvalidStructureException;
 use Vhood\TreeType\MaterializedPathConverter;
 
@@ -55,7 +54,7 @@ class MaterializedPath implements TreeType
     /**
      * {@inheritdoc}
      */
-    public function initConverter(): TypeConverter
+    public function initConverter()
     {
         return new MaterializedPathConverter(
             $this->nodes,

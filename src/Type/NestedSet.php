@@ -3,7 +3,6 @@
 namespace Vhood\TreeType\Type;
 
 use Vhood\TreeType\Contract\TreeType;
-use Vhood\TreeType\Contract\TypeConverter;
 use Vhood\TreeType\Exception\InvalidStructureException;
 use Vhood\TreeType\NestedSetConverter;
 
@@ -56,7 +55,7 @@ class NestedSet implements TreeType
     /**
      * {@inheritdoc}
      */
-    public function initConverter(): TypeConverter
+    public function initConverter()
     {
         return new NestedSetConverter($this->nodes, $this->leftValueKey, $this->rightValueKey, $this->idKey);
     }

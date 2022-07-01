@@ -7,5 +7,5 @@ interface TreeType
     /**
      * @return TypeConverter
      */
-    public function initConverter(): TypeConverter;
+    public function initConverter();
 }

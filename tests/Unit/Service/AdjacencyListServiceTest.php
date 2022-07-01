@@ -59,7 +59,7 @@ class AdjacencyListServiceTest extends TestCase
                 'parent_id' => 'three',
                 'name' => 'node4',
             ],
-            'last' =>[
+            'last' => [
                 'id' => 'five',
                 'parent_id' => 'four',
                 'name' => 'node4',

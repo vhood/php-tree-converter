@@ -3,7 +3,6 @@
 namespace Vhood\TreeType\Type;
 
 use Vhood\TreeType\Contract\TreeType;
-use Vhood\TreeType\Contract\TypeConverter;
 use Vhood\TreeType\Converter\AdjacencyListConverter;
 use Vhood\TreeType\Exception\InvalidStructureException;
 
@@ -37,7 +36,7 @@ class AdjacencyList implements TreeType
     /**
      * {@inheritdoc}
      */
-    public function initConverter(): TypeConverter
+    public function initConverter()
     {
         return new AdjacencyListConverter($this, $this->nodes, $this->idKey, $this->parentIdKey);
     }

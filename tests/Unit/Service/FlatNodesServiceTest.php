@@ -7,7 +7,7 @@ use Vhood\TreeType\Service\FlatNodesService;
 
 class FlatNodesServiceTest extends TestCase
 {
-    public function testFiledsRenamig()
+    public function testFieldsRenaming()
     {
         $actualNodes = [
             [
@@ -41,7 +41,7 @@ class FlatNodesServiceTest extends TestCase
         $this->assertSame(json_encode($expectedNodes), json_encode($result));
     }
 
-    public function testFiledsRemovig()
+    public function testFieldsRemoving()
     {
         $actualNodes = [
             [
