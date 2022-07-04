@@ -40,8 +40,8 @@ class FlatNodesService
      */
     public function removeKeys(array $keys)
     {
-        return array_map(function ($node) use ($keys) {
+        return array_values(array_map(function ($node) use ($keys) {
             return array_diff_key($node, array_flip($keys));
-        }, $this->nodes);
+        }, $this->nodes));
     }
 }
