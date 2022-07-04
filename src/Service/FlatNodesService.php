@@ -16,17 +16,22 @@ class FlatNodesService
     }
 
     /**
-     * @param array $keyMapping ['currentKey' => 'newKey']
+     * @param array $keyMap ['currentKey' => 'newKey', 'currentKey' => 'newKey']
      * @return array $nodes
      */
-    public function renameKeys(array $keyMapping)
+    public function renameKeys(array $keyMap)
     {
-        return array_map(function ($node) use ($keyMapping) {
-            return array_merge(
-                array_diff_key($node, $keyMapping),
-                array_combine($keyMapping, array_intersect_key($node, $keyMapping))
+        $nodesRow = json_encode($this->nodes);
+
+        foreach ($keyMap as $oldKey => $newKey) {
+            $nodesRow = str_replace(
+                sprintf('"%s":', $oldKey),
+                sprintf('"%s":', $newKey),
+                $nodesRow
             );
-        }, $this->nodes);
+        }
+
+        return json_decode($nodesRow, true);
     }
 
     /**
