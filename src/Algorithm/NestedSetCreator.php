@@ -24,7 +24,7 @@ class NestedSetCreator extends TypeCreator
     /**
      * {@inheritdoc}
      */
-    public function fromAdjacencyList($idKey, $parentIdKey, $nodes, $recursiveParentNode = null): array
+    public function fromAdjacencyList($idKey, $parentIdKey, $nodes, $recursiveParentNode = null)
     {
         $nestedSet = [];
 
@@ -32,7 +32,17 @@ class NestedSetCreator extends TypeCreator
 
         $alService = new AdjacencyListService($nodes, $idKey, $parentIdKey);
 
-        foreach ($nodes as $node) {
+        $nodesToIterate = $nodes;
+
+        if ($recursiveParentNode) {
+            $children = array_filter($nodes, function ($currentNode) use ($recursiveParentNode, $idKey, $parentIdKey) {
+                return $currentNode[$parentIdKey] === $recursiveParentNode[$idKey];
+            });
+
+            $nodesToIterate = $children;
+        }
+
+        foreach ($nodesToIterate as $node) {
             $isFirstLevelNode = !$node[$parentIdKey];
 
             if (!$isFirstLevelNode && !$recursiveParentNode) {
@@ -46,18 +56,12 @@ class NestedSetCreator extends TypeCreator
             $node[$this->leftValueKey] = $left;
             $node[$this->rightValueKey] = $right;
 
-            unset($node[$parentIdKey]);
-
             $nestedSet[] = $node;
 
             $left = $right + 1;
 
             if ($childrenLength) {
-                $children = array_filter($nodes, function ($currentNode) use ($node, $idKey, $parentIdKey) {
-                    return $currentNode[$parentIdKey] === $node[$idKey];
-                });
-
-                $nestedSet = array_merge($nestedSet, $this->fromAdjacencyList($idKey, $parentIdKey, $children, $node));
+                $nestedSet = array_merge($nestedSet, $this->fromAdjacencyList($idKey, $parentIdKey, $nodes, $node));
             }
         }
 
@@ -67,7 +71,7 @@ class NestedSetCreator extends TypeCreator
     /**
      * {@inheritdoc}
      */
-    public function fromMaterializedPath($pathKey, $pathSeparator, $nodes, $recursiveParentNode = null): array
+    public function fromMaterializedPath($pathKey, $pathSeparator, $nodes, $recursiveParentNode = null)
     {
         $nestedSet = [];
 
@@ -123,7 +127,7 @@ class NestedSetCreator extends TypeCreator
      * @var $idKey not used
      * @var $recursiveParentNode not used
      */
-    public function fromNestedSet($leftValueKey, $rightValueKey, $idKey, $nodes, $recursiveParentNode = null): array
+    public function fromNestedSet($leftValueKey, $rightValueKey, $idKey, $nodes, $recursiveParentNode = null)
     {
         return $this
             ->initService($nodes)
@@ -136,7 +140,7 @@ class NestedSetCreator extends TypeCreator
     /**
      * {@inheritdoc}
      */
-    public function fromTree($childrenKey, $idKey, $nodes, $recursiveParentNode = null): array
+    public function fromTree($childrenKey, $idKey, $nodes, $recursiveParentNode = null)
     {
         $nestedSet = [];
         $leftToRightLength = 4;

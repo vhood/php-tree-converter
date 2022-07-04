@@ -38,6 +38,6 @@ class AdjacencyList implements TreeType
      */
     public function initConverter()
     {
-        return new AdjacencyListConverter($this, $this->nodes, $this->idKey, $this->parentIdKey);
+        return new AdjacencyListConverter($this->nodes, $this->idKey, $this->parentIdKey);
     }
 }

@@ -35,7 +35,7 @@ class NestedSetConverter implements TypeConverter
     /**
      * {@inheritdoc}
      */
-    public function toAdjacencyList($idKey = 'id', $parentIdKey = 'parent_id'): array
+    public function toAdjacencyList($idKey = 'id', $parentIdKey = 'parent_id')
     {
         $creator = new AdjacencyListCreator($idKey, $parentIdKey);
 
@@ -58,7 +58,7 @@ class NestedSetConverter implements TypeConverter
     /**
      * {@inheritdoc}
      */
-    public function toMaterializedPath($pathKey = 'path', $pathSeparator = '/', $levelKey = null, $idKey = null): array
+    public function toMaterializedPath($pathKey = 'path', $pathSeparator = '/', $levelKey = null, $idKey = null)
     {
         $creator = new MaterializedPathCreator($pathKey, $pathSeparator);
 
@@ -96,7 +96,7 @@ class NestedSetConverter implements TypeConverter
     /**
      * {@inheritdoc}
      */
-    public function toNestedSet($leftValueKey = 'lft', $rightValueKey = 'rgt', $idKey = null): array
+    public function toNestedSet($leftValueKey = 'lft', $rightValueKey = 'rgt', $idKey = null)
     {
         $creator = new NestedSetCreator($this->leftValueKey, $this->rightValueKey);
 
@@ -125,7 +125,7 @@ class NestedSetConverter implements TypeConverter
     /**
      * {@inheritdoc}
      */
-    public function toTree($childrenKey = 'children', $idKey = null): array
+    public function toTree($childrenKey = 'children', $idKey = null)
     {
         $creator = new AssociativeArrayTreeCreator($childrenKey);
 

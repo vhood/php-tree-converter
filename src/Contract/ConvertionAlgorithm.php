@@ -11,7 +11,7 @@ interface ConvertionAlgorithm
      * @param array $recursiveParentNode
      * @return array
      */
-    public function fromAdjacencyList($idKey, $parentIdKey, $nodes, $recursiveParentNode = null): array;
+    public function fromAdjacencyList($idKey, $parentIdKey, $nodes, $recursiveParentNode = null);
 
     /**
      * @param string $pathKey
@@ -20,7 +20,7 @@ interface ConvertionAlgorithm
      * @param array $recursiveParentNode
      * @return array
      */
-    public function fromMaterializedPath($pathKey, $pathSeparator, $nodes, $recursiveParentNode = null): array;
+    public function fromMaterializedPath($pathKey, $pathSeparator, $nodes, $recursiveParentNode = null);
 
     /**
      * @param string $leftValueKey
@@ -30,7 +30,7 @@ interface ConvertionAlgorithm
      * @param array $recursiveParentNode
      * @return array
      */
-    public function fromNestedSet($leftValueKey, $rightValueKey, $idKey, $nodes, $recursiveParentNode = null): array;
+    public function fromNestedSet($leftValueKey, $rightValueKey, $idKey, $nodes, $recursiveParentNode = null);
 
     /**
      * @param string $childrenKey
@@ -39,5 +39,5 @@ interface ConvertionAlgorithm
      * @param array $recursiveParentNode
      * @return array
      */
-    public function fromTree($childrenKey, $idKey, $nodes, $recursiveParentNode = null): array;
+    public function fromTree($childrenKey, $idKey, $nodes, $recursiveParentNode = null);
 }

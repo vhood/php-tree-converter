@@ -32,7 +32,7 @@ class AssociativeArrayTreeConverter implements TypeConverter
     /**
      * {@inheritdoc}
      */
-    public function toAdjacencyList($idKey = 'id', $parentIdKey = 'parent_id'): array
+    public function toAdjacencyList($idKey = 'id', $parentIdKey = 'parent_id')
     {
         $associativeArrayTree = $this->nodes;
 
@@ -60,7 +60,7 @@ class AssociativeArrayTreeConverter implements TypeConverter
     /**
      * {@inheritdoc}
      */
-    public function toMaterializedPath($pathKey = 'path', $pathSeparator = '/', $levelKey = null, $idKey = null): array
+    public function toMaterializedPath($pathKey = 'path', $pathSeparator = '/', $levelKey = null, $idKey = null)
     {
         $creator = new MaterializedPathCreator($pathKey, $pathSeparator);
 
@@ -95,7 +95,7 @@ class AssociativeArrayTreeConverter implements TypeConverter
     /**
      * {@inheritdoc}
      */
-    public function toNestedSet($leftValueKey = 'lft', $rightValueKey = 'rgt', $idKey = null): array
+    public function toNestedSet($leftValueKey = 'lft', $rightValueKey = 'rgt', $idKey = null)
     {
         $creator = new NestedSetCreator($leftValueKey, $rightValueKey);
 
@@ -125,7 +125,7 @@ class AssociativeArrayTreeConverter implements TypeConverter
     /**
      * {@inheritdoc}
      */
-    public function toTree($childrenKey = 'children', $idKey = null): array
+    public function toTree($childrenKey = 'children', $idKey = null)
     {
         $creator = new AssociativeArrayTreeCreator($this->childrenKey);
 

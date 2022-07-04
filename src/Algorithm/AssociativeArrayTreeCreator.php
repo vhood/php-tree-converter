@@ -20,7 +20,7 @@ class AssociativeArrayTreeCreator extends TypeCreator
     /**
      * {@inheritdoc}
      */
-    public function fromAdjacencyList($idKey, $parentIdKey, $nodes, $recursiveParentNode = null): array
+    public function fromAdjacencyList($idKey, $parentIdKey, $nodes, $recursiveParentNode = null)
     {
         $associativeArrayTree = [];
 
@@ -46,7 +46,7 @@ class AssociativeArrayTreeCreator extends TypeCreator
     /**
      * {@inheritdoc}
      */
-    public function fromMaterializedPath($pathKey, $pathSeparator, $nodes, $recursiveParentNode = null): array
+    public function fromMaterializedPath($pathKey, $pathSeparator, $nodes, $recursiveParentNode = null)
     {
         $associativeArrayTree = [];
 
@@ -87,7 +87,7 @@ class AssociativeArrayTreeCreator extends TypeCreator
     /**
      * {@inheritdoc}
      */
-    public function fromNestedSet($leftValueKey, $rightValueKey, $idKey, $nodes, $recursiveParentNode = null): array
+    public function fromNestedSet($leftValueKey, $rightValueKey, $idKey, $nodes, $recursiveParentNode = null)
     {
         $associativeArrayTree = [];
 
@@ -139,7 +139,7 @@ class AssociativeArrayTreeCreator extends TypeCreator
      * @var $idKey not used
      * @var $recursiveParentNode not used
      */
-    public function fromTree($childrenKey, $idKey, $nodes, $recursiveParentNode = null): array
+    public function fromTree($childrenKey, $idKey, $nodes, $recursiveParentNode = null)
     {
         $treeService = new AssociativeArrayTreeService($nodes, $this->childrenKey, null);
 

@@ -25,7 +25,7 @@ class MaterializedPathCreator extends TypeCreator
      * {@inheritdoc}
      * @var $recursiveParentNode not used
      */
-    public function fromAdjacencyList($idKey, $parentIdKey, $nodes, $recursiveParentNode = null): array
+    public function fromAdjacencyList($idKey, $parentIdKey, $nodes, $recursiveParentNode = null)
     {
         $alService = new AdjacencyListService($nodes, $idKey, $parentIdKey);
 
@@ -35,8 +35,6 @@ class MaterializedPathCreator extends TypeCreator
                 $alService->buildNodePath($node, $this->pathSeparator),
                 $this->pathSeparator
             );
-
-            unset($node[$this->parentIdField]);
 
             return $node;
         }, $nodes);
@@ -48,7 +46,7 @@ class MaterializedPathCreator extends TypeCreator
      * @param string $pathSeparator $nodes path separator
      * @var $recursiveParentNode not used
      */
-    public function fromMaterializedPath($pathKey, $pathSeparator, $nodes, $recursiveParentNode = null): array
+    public function fromMaterializedPath($pathKey, $pathSeparator, $nodes, $recursiveParentNode = null)
     {
         $mpService = new MaterializedPathService($nodes, $this->pathKey, $pathSeparator);
 
@@ -59,7 +57,7 @@ class MaterializedPathCreator extends TypeCreator
      * {@inheritdoc}
      * @var $recursiveParentNode not used
      */
-    public function fromNestedSet($leftValueKey, $rightValueKey, $idKey, $nodes, $recursiveParentNode = null): array
+    public function fromNestedSet($leftValueKey, $rightValueKey, $idKey, $nodes, $recursiveParentNode = null)
     {
         $materializedPath = [];
 
@@ -93,7 +91,7 @@ class MaterializedPathCreator extends TypeCreator
     /**
      * {@inheritdoc}
      */
-    public function fromTree($childrenKey, $idKey, $nodes, $recursiveParentNode = null): array
+    public function fromTree($childrenKey, $idKey, $nodes, $recursiveParentNode = null)
     {
         $materializedPath = [];
 

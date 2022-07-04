@@ -24,21 +24,32 @@ class AdjacencyListCreator extends TypeCreator
      * @param string $parentIdKey $nodes parentId key
      * @var $recursiveParentNode not used
      */
-    public function fromAdjacencyList($idKey, $parentIdKey, $nodes, $recursiveParentNode = null): array
+    public function fromAdjacencyList($idKey, $parentIdKey, $nodes, $recursiveParentNode = null)
     {
-        return $this
-            ->initService($nodes)
-            ->renameKeys([
-                $this->idKey,
-                $this->parentIdKey
-            ]);
+        if ($this->idKey === $idKey && $this->parentIdKey === $parentIdKey) {
+            return $nodes;
+        }
+
+        $service = $this->initService($nodes);
+
+        $keyMap = [];
+
+        if($this->idKey !== $idKey) {
+            $keyMap[$this->idKey] = $idKey;
+        }
+
+        if($this->parentIdKey !== $parentIdKey) {
+            $keyMap[$this->parentIdKey] = $parentIdKey;
+        }
+
+        return $service->renameKeys($keyMap);
     }
 
     /**
      * {@inheritdoc}
      * @var $recursiveParentNode not used
      */
-    public function fromMaterializedPath($pathKey, $pathSeparator, $nodes, $recursiveParentNode = null): array
+    public function fromMaterializedPath($pathKey, $pathSeparator, $nodes, $recursiveParentNode = null)
     {
         $adjacencyList = [];
 
@@ -64,7 +75,7 @@ class AdjacencyListCreator extends TypeCreator
      * {@inheritdoc}
      * @var $recursiveParentNode not used
      */
-    public function fromNestedSet($leftValueKey, $rightValueKey, $idKey, $nodes, $recursiveParentNode = null): array
+    public function fromNestedSet($leftValueKey, $rightValueKey, $idKey, $nodes, $recursiveParentNode = null)
     {
         $adjacencyList = [];
 
@@ -97,7 +108,7 @@ class AdjacencyListCreator extends TypeCreator
     /**
      * {@inheritdoc}
      */
-    public function fromTree($childrenKey, $idKey, $nodes, $recursiveParentNode = null): array
+    public function fromTree($childrenKey, $idKey, $nodes, $recursiveParentNode = null)
     {
         $adjacencyList = [];
 

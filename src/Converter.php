@@ -7,7 +7,7 @@ use Vhood\TreeType\Contract\TypeConverter;
 
 class Converter implements TypeConverter
 {
-    private TypeConverter $typeConverter;
+    private $typeConverter;
 
     /**
      * @param TreeType $tree
@@ -21,7 +21,7 @@ class Converter implements TypeConverter
     /**
      * {@inheritdoc}
      */
-    public function toAdjacencyList($idKey = 'id', $parentIdKey = 'parent_id'): array
+    public function toAdjacencyList($idKey = 'id', $parentIdKey = 'parent_id')
     {
         return $this->typeConverter->toAdjacencyList($idKey, $parentIdKey);
     }
@@ -29,7 +29,7 @@ class Converter implements TypeConverter
     /**
      * {@inheritdoc}
      */
-    public function toMaterializedPath($pathKey = 'path', $pathSeparator = '/', $levelKey = null, $idKey = null): array
+    public function toMaterializedPath($pathKey = 'path', $pathSeparator = '/', $levelKey = null, $idKey = null)
     {
         return $this->typeConverter->toMaterializedPath($pathKey, $pathSeparator, $levelKey, $idKey);
     }
@@ -37,7 +37,7 @@ class Converter implements TypeConverter
     /**
      * {@inheritdoc}
      */
-    public function toNestedSet($leftValueKey = 'lft', $rightValueKey = 'rgt', $idKey = null): array
+    public function toNestedSet($leftValueKey = 'lft', $rightValueKey = 'rgt', $idKey = null)
     {
         return $this->typeConverter->toNestedSet($leftValueKey, $rightValueKey, $idKey);
     }
@@ -45,7 +45,7 @@ class Converter implements TypeConverter
     /**
      * {@inheritdoc}
      */
-    public function toTree($childrenKey = 'children', $idKey = null): array
+    public function toTree($childrenKey = 'children', $idKey = null)
     {
         return $this->typeConverter->toTree($childrenKey, $idKey);
     }
