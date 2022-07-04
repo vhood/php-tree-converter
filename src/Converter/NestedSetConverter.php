@@ -1,6 +1,6 @@
 <?php
 
-namespace Vhood\TreeType;
+namespace Vhood\TreeType\Converter;
 
 use Vhood\TreeType\Algorithm\AdjacencyListCreator;
 use Vhood\TreeType\Algorithm\AssociativeArrayTreeCreator;
