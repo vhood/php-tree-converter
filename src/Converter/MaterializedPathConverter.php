@@ -1,6 +1,6 @@
 <?php
 
-namespace Vhood\TreeType;
+namespace Vhood\TreeType\Converter;
 
 use Vhood\TreeType\Algorithm\AdjacencyListCreator;
 use Vhood\TreeType\Algorithm\AssociativeArrayTreeCreator;
@@ -8,6 +8,7 @@ use Vhood\TreeType\Algorithm\MaterializedPathCreator;
 use Vhood\TreeType\Algorithm\NestedSetCreator;
 use Vhood\TreeType\Contract\TypeConverter;
 use Vhood\TreeType\Service\MaterializedPathService;
+use Vhood\TreeType\Specification\MaterializedPathSpecification;
 
 class MaterializedPathConverter implements TypeConverter
 {
@@ -41,17 +42,21 @@ class MaterializedPathConverter implements TypeConverter
     {
         $creator = new AdjacencyListCreator($idKey, $parentIdKey);
 
-        $adjacencyList = $creator->fromMaterializedPath($this->pathKey, $this->pathSeparator, $this->nodes);
+        $nodes = $this->nodes;
 
-        $areIdentifiersInteger = empty(array_filter($this->nodes, function ($node) {
-            return !is_integer(str_replace($this->pathSeparator, $node[$this->pathKey], ''));
-        }));
+        if ($this->idKey && $this->idKey !== $idKey) {
+            $nodes = $creator->initService($this->nodes)->renameKeys([$this->idKey => $idKey]);
+        }
 
-        if ($areIdentifiersInteger) {
+        $adjacencyList = $creator->fromMaterializedPath($this->pathKey, $this->pathSeparator, $nodes);
+
+        $mpSpecification = new MaterializedPathSpecification($nodes, $this->pathKey, $this->pathSeparator);
+
+        if ($mpSpecification->areIdentifiersNumeric()) {
             $adjacencyList = array_map(
                 function ($node) use ($idKey, $parentIdKey) {
                     $node[$idKey] = (int)$node[$idKey];
-                    $node[$parentIdKey] = (int)$node[$parentIdKey];
+                    $node[$parentIdKey] = $node[$parentIdKey] ? (int)$node[$parentIdKey] : null;
                     return $node;
                 },
                 $adjacencyList
@@ -139,8 +144,20 @@ class MaterializedPathConverter implements TypeConverter
      */
     public function toTree($childrenKey = 'children', $idKey = null)
     {
+        $nodes = $this->nodes;
+
+        if ($idKey && !$this->idKey) {
+            $this->idKey = 'id';
+            $mpService = new MaterializedPathService($nodes, $this->pathKey, $this->pathSeparator);
+            $nodes = $mpService->identifyNodes($this->idKey);
+        }
+
         $creator = new AssociativeArrayTreeCreator($childrenKey);
 
-        return $creator->fromMaterializedPath($this->pathKey, $this->pathSeparator, $this->nodes);
+        if ($idKey && $idKey !== $this->idKey) {
+            $nodes = $creator->initService($nodes)->renameKeys([$this->idKey => $idKey]);
+        }
+
+        return $creator->fromMaterializedPath($this->pathKey, $this->pathSeparator, $nodes);
     }
 }

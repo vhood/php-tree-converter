@@ -2,6 +2,8 @@
 
 namespace Vhood\TreeType\Service;
 
+use Vhood\TreeType\Specification\MaterializedPathSpecification;
+
 class MaterializedPathService
 {
     private $nodes;
@@ -27,7 +29,7 @@ class MaterializedPathService
      */
     public function identifyNodes($idKey)
     {
-        return array_map(function ($node) use ($idKey) {
+        $nodes = array_map(function ($node) use ($idKey) {
             $nodeIdRegexp = "/.*%s(.*)%s/";
             $escapedSeparator = preg_quote($this->pathSeparator, '/');
 
@@ -39,6 +41,17 @@ class MaterializedPathService
 
             return $node;
         }, $this->nodes);
+
+        $mpSpecification = new MaterializedPathSpecification($nodes, $this->pathKey, $this->pathSeparator);
+
+        if ($mpSpecification->areIdentifiersNumeric()) {
+            $nodes = array_map(function ($node) use ($idKey) {
+                $node[$idKey] = (int)$node[$idKey];
+                return $node;
+            }, $nodes);
+        }
+
+        return $nodes;
     }
 
     /**

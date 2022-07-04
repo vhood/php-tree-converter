@@ -3,8 +3,8 @@
 namespace Vhood\TreeType\Type;
 
 use Vhood\TreeType\Contract\TreeType;
+use Vhood\TreeType\Converter\MaterializedPathConverter;
 use Vhood\TreeType\Exception\InvalidStructureException;
-use Vhood\TreeType\MaterializedPathConverter;
 
 class MaterializedPath implements TreeType
 {

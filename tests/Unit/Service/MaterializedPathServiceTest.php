@@ -35,37 +35,79 @@ class MaterializedPathServiceTest extends TestCase
         ];
     }
 
-    public function testNodesIdentification()
+    public function testNumBasedNodesIdentification()
     {
         $expectedNodes = [
             [
-                'id' => '1',
+                'id' => 1,
                 'name' => 'node1',
                 'path' => '/1/',
             ],
             [
-                'id' => '3',
+                'id' => 3,
                 'name' => 'node3',
                 'path' => '/1/3/',
             ],
             [
-                'id' => '2',
+                'id' => 2,
                 'name' => 'node2',
                 'path' => '/1/3/2/',
             ],
             [
-                'id' => '4',
+                'id' => 4,
                 'name' => 'node4',
                 'path' => '/1/3/4/',
             ],
             [
-                'id' => '5',
+                'id' => 5,
                 'name' => 'node5',
                 'path' => '/1/3/4/5/',
             ],
         ];
 
         $service = new MaterializedPathService($this->actualNodes, 'path', '/');
+
+        $result = array_values($service->identifyNodes('id'));
+
+        $this->assertSame(json_encode($expectedNodes), json_encode($result));
+    }
+
+    public function testSlugBasedNodesIdentification()
+    {
+        $actualNodes = [
+            [
+                'name' => 'node1',
+                'path' => '/one/',
+            ],
+            [
+                'name' => 'node3',
+                'path' => '/one/three/',
+            ],
+            [
+                'name' => 'node2',
+                'path' => '/one/three/two/',
+            ],
+        ];
+
+        $expectedNodes = [
+            [
+                'id' => 'one',
+                'name' => 'node1',
+                'path' => '/one/',
+            ],
+            [
+                'id' => 'three',
+                'name' => 'node3',
+                'path' => '/one/three/',
+            ],
+            [
+                'id' => 'two',
+                'name' => 'node2',
+                'path' => '/one/three/two/',
+            ],
+        ];
+
+        $service = new MaterializedPathService($actualNodes, 'path', '/');
 
         $result = array_values($service->identifyNodes('id'));
 

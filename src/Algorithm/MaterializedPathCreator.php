@@ -48,7 +48,11 @@ class MaterializedPathCreator extends TypeCreator
      */
     public function fromMaterializedPath($pathKey, $pathSeparator, $nodes, $recursiveParentNode = null)
     {
-        $mpService = new MaterializedPathService($nodes, $this->pathKey, $pathSeparator);
+        $mpService = new MaterializedPathService($nodes, $this->pathKey, $this->pathSeparator);
+
+        if ($pathKey === $this->pathKey && $pathSeparator === $this->pathSeparator) {
+            return $nodes;
+        }
 
         return $mpService->rebuildPath($pathKey, $pathSeparator);
     }

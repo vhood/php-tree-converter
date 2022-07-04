@@ -79,7 +79,31 @@ class NestedSetCreator extends TypeCreator
 
         $mpService = new MaterializedPathService($nodes, $pathKey, $pathSeparator);
 
-        foreach ($nodes as $node) {
+        $nodesToIterate = $nodes;
+
+        if ($recursiveParentNode) {
+            $children = array_filter(
+                $nodes,
+                function ($node) use ($recursiveParentNode, $pathKey, $pathSeparator) {
+                    $parentPath = preg_replace(
+                        sprintf(
+                            "/(.+%s)\d+%s$/m",
+                            preg_quote($pathSeparator, '/'),
+                            preg_quote($pathSeparator, '/')
+                        ),
+                        "$1",
+                        $node[$pathKey]
+                    );
+
+                    return $recursiveParentNode[$pathKey] === $parentPath
+                        && $recursiveParentNode[$pathKey] !== $node[$pathKey];
+                }
+            );
+
+            $nodesToIterate = $children;
+        }
+
+        foreach ($nodesToIterate as $node) {
             $isFirstLevelNode = count(array_filter(explode($pathSeparator, $node[$pathKey]))) < 2;
 
             if (!$isFirstLevelNode && !$recursiveParentNode) {
@@ -93,25 +117,11 @@ class NestedSetCreator extends TypeCreator
             $node[$this->leftValueKey] = $left;
             $node[$this->rightValueKey] = $right;
 
-            $nodePath = $node[$pathKey];
             $nestedSet[] = $node;
 
+
             if ($childrenLength) {
-                $children = array_filter($this->data, function ($currentNode) use ($nodePath, $pathKey, $pathSeparator) {
-                    $parentPath = preg_replace(
-                        sprintf(
-                            "/(.+%s)\d+%s$/m",
-                            preg_quote($pathSeparator, '/'),
-                            preg_quote($pathSeparator, '/')
-                        ),
-                        "$1",
-                        $currentNode[$pathKey]
-                    );
-
-                    return $nodePath !== $currentNode[$pathKey] && $nodePath === $parentPath;
-                });
-
-                $nestedSet = array_merge($nestedSet, $this->fromMaterializedPath($pathKey, $pathSeparator, $children, $node));
+                $nestedSet = array_merge($nestedSet, $this->fromMaterializedPath($pathKey, $pathSeparator, $nodes, $node));
             }
 
             $left = $right + 1;
