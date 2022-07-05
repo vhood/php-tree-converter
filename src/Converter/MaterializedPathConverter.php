@@ -109,27 +109,29 @@ class MaterializedPathConverter implements TypeConverter
 
         $materializedPath = $this->nodes;
 
+        $identifier = $this->idKey;
+
         if (!$this->idKey) {
-            $this->idKey = 'id';
+            $identifier = 'id';
             $mpService = new MaterializedPathService($materializedPath, $this->pathKey, $this->pathSeparator);
-            $materializedPath = $mpService->identifyNodes($this->idKey);
+            $materializedPath = $mpService->identifyNodes($identifier);
         }
 
         $nestedSet = $creator->fromMaterializedPath($this->pathKey, $this->pathSeparator, $materializedPath);
 
-        uasort($nestedSet, function ($firstNode, $secondNode) {
-            return $firstNode[$this->idKey] > $secondNode[$this->idKey];
+        uasort($nestedSet, function ($firstNode, $secondNode) use ($identifier) {
+            return $firstNode[$identifier] > $secondNode[$identifier];
         });
 
-        if ($idKey && $idKey !== $this->idKey) {
+        if ($idKey && $idKey !== $identifier) {
             $nestedSet = $creator
                 ->initService($nestedSet)
-                ->renameKeys([$this->idKey => $idKey]);
+                ->renameKeys([$identifier => $idKey]);
         }
 
         $keysToRemove = [$this->pathKey];
         if (!$idKey) {
-            $keysToRemove[] = $this->idKey;
+            $keysToRemove[] = $identifier;
         }
 
         $nestedSet = $creator
@@ -147,14 +149,13 @@ class MaterializedPathConverter implements TypeConverter
         $nodes = $this->nodes;
 
         if ($idKey && !$this->idKey) {
-            $this->idKey = 'id';
             $mpService = new MaterializedPathService($nodes, $this->pathKey, $this->pathSeparator);
-            $nodes = $mpService->identifyNodes($this->idKey);
+            $nodes = $mpService->identifyNodes($idKey);
         }
 
         $creator = new AssociativeArrayTreeCreator($childrenKey);
 
-        if ($idKey && $idKey !== $this->idKey) {
+        if ($idKey && $this->idKey && $idKey !== $this->idKey) {
             $nodes = $creator->initService($nodes)->renameKeys([$this->idKey => $idKey]);
         }
 

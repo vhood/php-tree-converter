@@ -155,16 +155,23 @@ class NestedSetCreator extends TypeCreator
         $nestedSet = [];
         $leftToRightLength = 4;
 
-        $left = $recursiveParentNode ? $recursiveParentNode[$this->leftValueKey] : 1;
+        $left = $recursiveParentNode ? $recursiveParentNode[$this->leftValueKey] + 1 : 1;
 
-        foreach ($nodes as $node) {
+        $nodesToIterate = $recursiveParentNode
+            ? $recursiveParentNode[$childrenKey]
+            : $nodes;
+
+        foreach ($nodesToIterate as $node) {
             $node[$this->leftValueKey] = $left;
+
             $right = (count($node[$childrenKey], COUNT_RECURSIVE) / $leftToRightLength * 2) + $left + 1;
+
             $node[$this->rightValueKey] = $right;
 
             if (!empty($node[$childrenKey])) {
-                $this->fromTree($childrenKey, $idKey, $node[$childrenKey], $node);
+                $nestedSet = array_merge($nestedSet, $this->fromTree($childrenKey, $idKey, $nodes, $node));
             }
+
             unset($node[$childrenKey]);
 
             $nestedSet[] = $node;

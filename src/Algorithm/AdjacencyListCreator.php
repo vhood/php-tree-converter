@@ -118,7 +118,10 @@ class AdjacencyListCreator extends TypeCreator
                 : null;
 
             if (!empty($node[$childrenKey])) {
-                $adjacencyList = array_merge($adjacencyList, $this->fromTree($node[$childrenKey], $idKey, $node));
+                $adjacencyList = array_merge(
+                    $adjacencyList,
+                    $this->fromTree($childrenKey, $idKey, $node[$childrenKey], $node)
+                );
             }
 
             unset($node[$childrenKey]);

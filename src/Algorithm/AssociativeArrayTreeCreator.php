@@ -91,7 +91,9 @@ class AssociativeArrayTreeCreator extends TypeCreator
     {
         $associativeArrayTree = [];
 
-        foreach ($nodes as $index => $node) {
+        $nodesToIterate = $nodes;
+
+        foreach ($nodesToIterate as $index => $node) {
             $parents = array_filter($nodes, function ($currentNode) use ($node, $leftValueKey, $rightValueKey) {
                 return $currentNode[$leftValueKey] < $node[$leftValueKey]
                     && $currentNode[$rightValueKey] > $node[$rightValueKey];
@@ -114,7 +116,7 @@ class AssociativeArrayTreeCreator extends TypeCreator
             if (!$haveParent && !$recursiveParentNode || $isRequestedChild) {
                 $nodeToSave = $node;
 
-                unset($nodes[$index]);
+                unset($nodesToIterate[$index]);
 
                 $haveChildren = $nodeToSave[$rightValueKey] - $nodeToSave[$leftValueKey] > 1;
 

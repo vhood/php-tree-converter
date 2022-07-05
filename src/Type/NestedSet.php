@@ -3,8 +3,8 @@
 namespace Vhood\TreeType\Type;
 
 use Vhood\TreeType\Contract\TreeType;
+use Vhood\TreeType\Converter\NestedSetConverter;
 use Vhood\TreeType\Exception\InvalidStructureException;
-use Vhood\TreeType\NestedSetConverter;
 
 class NestedSet implements TreeType
 {

@@ -2,8 +2,8 @@
 
 namespace Vhood\TreeType\Type;
 
-use Vhood\TreeType\AssociativeArrayTreeConverter;
 use Vhood\TreeType\Contract\TreeType;
+use Vhood\TreeType\Converter\AssociativeArrayTreeConverter;
 use Vhood\TreeType\Exception\InvalidStructureException;
 use Vhood\TreeType\Service\AssociativeArrayTreeService;
 

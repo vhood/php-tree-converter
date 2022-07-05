@@ -65,14 +65,20 @@ class AssociativeArrayTreeConverter implements TypeConverter
         $creator = new MaterializedPathCreator($pathKey, $pathSeparator);
 
         $associativeArrayTree = $this->nodes;
-        $identifier = $idKey ? $idKey : 'id';
+        $identifier = $this->idKey;
 
         if (!$this->idKey) {
+            $identifier = 'id';
             $treeService = new AssociativeArrayTreeService($this->nodes, $this->childrenKey);
             $associativeArrayTree = $treeService->identifyNodes($identifier);
         }
 
         $materializedPath = $creator->fromTree($this->childrenKey, $identifier, $associativeArrayTree);
+
+        $materializedPath = array_map(function ($node) use ($pathKey, $pathSeparator) {
+            $node[$pathKey] = sprintf('%s%s%s', $pathSeparator, $node[$pathKey], $pathSeparator);
+            return $node;
+        }, $materializedPath);
 
         usort($materializedPath, function ($first, $second) use ($identifier) {
             return $first[$identifier] > $second[$identifier];
@@ -86,7 +92,13 @@ class AssociativeArrayTreeConverter implements TypeConverter
         if (!$idKey) {
             $materializedPath =  $creator
                 ->initService($materializedPath)
-                ->removeKeys([$idKey]);
+                ->removeKeys([$identifier]);
+        }
+
+        if ($idKey && $idKey !== $identifier) {
+            $materializedPath =  $creator
+                ->initService($materializedPath)
+                ->renameKeys([$identifier => $idKey]);
         }
 
         return $materializedPath;
@@ -100,9 +112,10 @@ class AssociativeArrayTreeConverter implements TypeConverter
         $creator = new NestedSetCreator($leftValueKey, $rightValueKey);
 
         $associativeArrayTree = $this->nodes;
-        $identifier = $idKey ? $idKey : 'id';
+        $identifier = $this->idKey;
 
         if (!$this->idKey) {
+            $identifier = 'id';
             $treeService = new AssociativeArrayTreeService($this->nodes, $this->childrenKey);
             $associativeArrayTree = $treeService->identifyNodes($identifier);
         }
@@ -116,7 +129,13 @@ class AssociativeArrayTreeConverter implements TypeConverter
         if (!$idKey) {
             $nestedSet = $creator
                 ->initService($nestedSet)
-                ->removeKeys([$idKey]);
+                ->removeKeys([$identifier]);
+        }
+
+        if ($idKey && $idKey !== $identifier) {
+            $nestedSet =  $creator
+                ->initService($nestedSet)
+                ->renameKeys([$identifier => $idKey]);
         }
 
         return $nestedSet;

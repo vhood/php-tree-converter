@@ -99,15 +99,20 @@ class MaterializedPathCreator extends TypeCreator
     {
         $materializedPath = [];
 
-        foreach ($nodes as $node) {
+        $nodesToIterate = $recursiveParentNode
+            ? $recursiveParentNode[$childrenKey]
+            : $nodes;
+
+        foreach ($nodesToIterate as $node) {
             $node[$this->pathKey] = $recursiveParentNode
                 ? sprintf('%s%s%s', $recursiveParentNode[$this->pathKey], $this->pathSeparator, $node[$idKey])
                 : sprintf($node[$idKey]);
 
             if (!empty($node[$childrenKey])) {
-                foreach ($node[$childrenKey] as $child) {
-                    $materializedPath = array_merge($materializedPath, $this->fromTree($childrenKey, $idKey, $child, $node));
-                }
+                $materializedPath = array_merge(
+                    $materializedPath,
+                    $this->fromTree($childrenKey, $idKey, $nodes, $node)
+                );
             }
 
             unset($node[$childrenKey]);
