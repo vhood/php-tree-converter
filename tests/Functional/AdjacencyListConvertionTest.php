@@ -269,17 +269,9 @@ class AdjacencyListConvertionTest extends FunctionalTestCase
     public function testConvertSlugBasedNodesToMinimalNS()
     {
         $al = $this->slugBasedNodes(['id', 'parent_id', 'name']);
+        $ns = $this->slugBasedAndSlugSortedNodes(['lft', 'rgt', 'name']);
 
         $converter = new Converter(new AdjacencyList($al));
-
-        $ns = $this->slugBasedNodes(['lft', 'rgt', 'name', 'id']);
-        usort($ns, function($firstNode, $secondNode) {
-            return $firstNode['id'] > $secondNode['id'];
-        });
-        $ns = array_map(function($node) {
-            unset($node['id']);
-            return $node;
-        }, $ns);
 
         $this->assertSame(
             json_encode($ns),

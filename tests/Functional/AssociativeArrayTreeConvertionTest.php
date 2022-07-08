@@ -178,13 +178,9 @@ class AssociativeArrayTreeConvertionTest extends FunctionalTestCase
     public function testConvertSlugBasedTreeToAL()
     {
         $tree = $this->slugBasedTree();
-        $al = $this->slugBasedNodes(['id', 'parent_id', 'name']);
+        $al = $this->slugBasedAndSlugSortedNodes(['id', 'parent_id', 'name']);
 
         $converter = new Converter(new AssociativeArrayTree($tree, 'children', 'id'));
-
-        usort($al, function($firstNode, $secondNode) {
-            return $firstNode['id'] > $secondNode['id'];
-        });
 
         $this->assertSame(
             json_encode($al),
@@ -298,19 +294,9 @@ class AssociativeArrayTreeConvertionTest extends FunctionalTestCase
     public function testConvertSlugBasedTreeToMinimalMP()
     {
         $tree = $this->slugBasedTree();
+        $mp = $this->slugBasedAndSlugSortedNodes(['path', 'name']);
 
         $converter = new Converter(new AssociativeArrayTree($tree, 'children', 'id'));
-
-        $mp = $this->slugBasedNodes(['id', 'path', 'name']);
-
-        usort($mp, function($firstNode, $secondNode) {
-            return $firstNode['id'] > $secondNode['id'];
-        });
-
-        $mp = array_map(function($node) {
-            unset($node['id']);
-            return $node;
-        }, $mp);
 
         $this->assertSame(
             json_encode($mp),
@@ -379,17 +365,9 @@ class AssociativeArrayTreeConvertionTest extends FunctionalTestCase
     public function testConvertSlugBasedTreeToMPWithLevels()
     {
         $tree = $this->slugBasedTree();
+        $mp = $this->slugBasedAndSlugSortedNodes(['path', 'name', 'level']);
 
         $converter = new Converter(new AssociativeArrayTree($tree, 'children', 'id'));
-
-        $mp = $this->slugBasedNodes(['id', 'path', 'name', 'level']);
-        usort($mp, function($firstNode, $secondNode) {
-            return $firstNode['id'] > $secondNode['id'];
-        });
-        $mp = array_map(function($node) {
-            unset($node['id']);
-            return $node;
-        }, $mp);
 
         $this->assertSame(
             json_encode($mp),
@@ -458,13 +436,9 @@ class AssociativeArrayTreeConvertionTest extends FunctionalTestCase
     public function testConvertSlugBasedTreeToMPWithIds()
     {
         $tree = $this->slugBasedTree();
+        $mp = $this->slugBasedAndSlugSortedNodes(['path', 'name', 'id']);
 
         $converter = new Converter(new AssociativeArrayTree($tree, 'children', 'id'));
-
-        $mp = $this->slugBasedNodes(['path', 'name', 'id']);
-        usort($mp, function($firstNode, $secondNode) {
-            return $firstNode['id'] > $secondNode['id'];
-        });
 
         $this->assertSame(
             json_encode($mp),
@@ -581,17 +555,9 @@ class AssociativeArrayTreeConvertionTest extends FunctionalTestCase
     public function testConvertSlugBasedTreeToMinimalNS()
     {
         $tree = $this->slugBasedTree();
+        $ns = $this->slugBasedAndSlugSortedNodes(['lft', 'rgt', 'name']);
 
         $converter = new Converter(new AssociativeArrayTree($tree, 'children', 'id'));
-
-        $ns = $this->slugBasedNodes(['lft', 'rgt', 'name', 'id']);
-        usort($ns, function($firstNode, $secondNode) {
-            return $firstNode['id'] > $secondNode['id'];
-        });
-        $ns = array_map(function($node) {
-            unset($node['id']);
-            return $node;
-        }, $ns);
 
         $this->assertSame(
             json_encode($ns),
@@ -663,13 +629,9 @@ class AssociativeArrayTreeConvertionTest extends FunctionalTestCase
     public function testConvertSlugBasedTreeToNSWithIds()
     {
         $tree = $this->slugBasedTree();
+        $ns = $this->slugBasedAndSlugSortedNodes(['id', 'lft', 'rgt', 'name']);
 
         $converter = new Converter(new AssociativeArrayTree($tree, 'children', 'id'));
-
-        $ns = $this->slugBasedNodes(['id', 'lft', 'rgt', 'name']);
-        usort($ns, function($firstNode, $secondNode) {
-            return $firstNode['id'] > $secondNode['id'];
-        });
 
         $this->assertSame(
             json_encode($ns),

@@ -306,17 +306,9 @@ class MaterializedPathConvertionTest extends FunctionalTestCase
     public function testSlugBasedButNotIdentifiedNodesToNS()
     {
         $mp = $this->slugBasedNodes(['path', 'name']);
+        $ns = $this->slugBasedAndSlugSortedNodes(['lft', 'rgt', 'name']);
 
         $converter = new Converter(new MaterializedPath($mp));
-
-        $ns = $this->slugBasedNodes(['lft', 'rgt', 'name', 'id']);
-        usort($ns, function($firstNode, $secondNode) {
-            return $firstNode['id'] > $secondNode['id'];
-        });
-        $ns = array_map(function($node) {
-            unset($node['id']);
-            return $node;
-        }, $ns);
 
         $this->assertSame(
             json_encode($ns),
@@ -340,17 +332,9 @@ class MaterializedPathConvertionTest extends FunctionalTestCase
     public function testSlugBasedNodesToMinimalNS()
     {
         $mp = $this->slugBasedNodes(['id', 'path', 'name']);
+        $ns = $this->slugBasedAndSlugSortedNodes(['lft', 'rgt', 'name']);
 
         $converter = new Converter(new MaterializedPath($mp, 'path', '/', null, 'id'));
-
-        $ns = $this->slugBasedNodes(['id', 'lft', 'rgt', 'name']);
-        usort($ns, function($firstNode, $secondNode) {
-            return $firstNode['id'] > $secondNode['id'];
-        });
-        $ns = array_map(function($node) {
-            unset($node['id']);
-            return $node;
-        }, $ns);
 
         $this->assertSame(
             json_encode($ns),
@@ -374,13 +358,9 @@ class MaterializedPathConvertionTest extends FunctionalTestCase
     public function testSlugBasedNodesToNS()
     {
         $mp = $this->slugBasedNodes(['id', 'path', 'name']);
+        $ns = $this->slugBasedAndSlugSortedNodes(['id', 'lft', 'rgt', 'name']);
 
         $converter = new Converter(new MaterializedPath($mp, 'path', '/', null, 'id'));
-
-        $ns = $this->slugBasedNodes(['id', 'lft', 'rgt', 'name']);
-        usort($ns, function($firstNode, $secondNode) {
-            return $firstNode['id'] > $secondNode['id'];
-        });
 
         $this->assertSame(
             json_encode($ns),
@@ -404,13 +384,9 @@ class MaterializedPathConvertionTest extends FunctionalTestCase
     public function testConvertSlugBasedButNotIdentifiedNodesToNSAndIdentifyThem()
     {
         $mp = $this->slugBasedNodes(['path', 'name']);
+        $ns = $this->slugBasedAndSlugSortedNodes(['id', 'lft', 'rgt', 'name']);
 
         $converter = new Converter(new MaterializedPath($mp));
-
-        $ns = $this->slugBasedNodes(['id', 'lft', 'rgt', 'name']);
-        usort($ns, function($firstNode, $secondNode) {
-            return $firstNode['id'] > $secondNode['id'];
-        });
 
         $this->assertSame(
             json_encode($ns),

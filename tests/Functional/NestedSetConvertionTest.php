@@ -347,13 +347,9 @@ class NestedSetConvertionTest extends FunctionalTestCase
     public function testConvertSlugBasedNodesToAL()
     {
         $ns = $this->slugBasedNodes(['id', 'lft', 'rgt', 'name']);
+        $al = $this->slugBasedAndSlugSortedNodes(['id', 'parent_id', 'name']);
 
         $converter = new Converter(new NestedSet($ns, 'lft', 'rgt', 'id'));
-
-        $al = $this->slugBasedNodes(['id', 'parent_id', 'name']);
-        usort($al, function($firstNode, $secondNode) {
-            return $firstNode['id'] > $secondNode['id'];
-        });
 
         $this->assertSame(
             json_encode($al),

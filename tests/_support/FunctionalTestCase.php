@@ -63,9 +63,46 @@ class FunctionalTestCase extends TestCase
         $nodes = require $this->slugBasedNodesPath;
 
         return array_map(function ($node) use ($keys) {
-            $filteredNodes = array_intersect_key($node, array_flip($keys));
-            uksort($filteredNodes, function($key) { return $key !== 'id'; });
-            return $filteredNodes;
+            $filteredNode = array_intersect_key($node, array_flip($keys));
+            uksort($filteredNode, function($key) { return $key !== 'id'; });
+            return $filteredNode;
         }, $nodes);
+    }
+
+    /**
+     * @param array $keys
+     * AL: [id, parent_id, {name}] \
+     * MP: [path, {name}, {level}, {id}] \
+     * NS: [lft, rgt, {name}, {id}]
+     * @return array
+     */
+    protected function slugBasedAndSlugSortedNodes(array $keys)
+    {
+        $nodes = require $this->slugBasedNodesPath;
+
+        $removeId = !in_array('id', $keys);
+
+        if ($removeId) {
+            $keys[] = 'id';
+        }
+
+        $filteredNodes = array_map(function ($node) use ($keys) {
+            $filteredNode = array_intersect_key($node, array_flip($keys));
+            uksort($filteredNode, function($key) { return $key !== 'id'; });
+            return $filteredNode;
+        }, $nodes);
+
+        usort($filteredNodes, function($firstNode, $secondNode) {
+            return $firstNode['id'] > $secondNode['id'];
+        });
+
+        if ($removeId) {
+            $filteredNodes = array_map(function($node) {
+                unset($node['id']);
+                return $node;
+            }, $filteredNodes);
+        }
+
+        return $filteredNodes;
     }
 }
