@@ -134,7 +134,7 @@ class NestedSetConverter implements TypeConverter
     /**
      * {@inheritdoc}
      */
-    public function toTree($childrenKey = 'children', $idKey = null)
+    public function toAssociativeArrayTree($childrenKey = 'children', $idKey = null)
     {
         $creator = new AssociativeArrayTreeCreator($childrenKey);
 

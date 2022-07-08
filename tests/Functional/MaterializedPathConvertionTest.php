@@ -451,7 +451,7 @@ class MaterializedPathConvertionTest extends FunctionalTestCase
 
         $this->assertSame(
             json_encode($this->minimalTree()),
-            json_encode($converter->toTree())
+            json_encode($converter->toAssociativeArrayTree())
         );
     }
 
@@ -463,7 +463,7 @@ class MaterializedPathConvertionTest extends FunctionalTestCase
 
         $this->assertSame(
             json_encode($this->minimalTree()),
-            json_encode($converter->toTree())
+            json_encode($converter->toAssociativeArrayTree())
         );
     }
 
@@ -475,7 +475,7 @@ class MaterializedPathConvertionTest extends FunctionalTestCase
 
         $this->assertSame(
             json_encode($this->minimalTree()),
-            json_encode($converter->toTree('children'))
+            json_encode($converter->toAssociativeArrayTree('children'))
         );
     }
 
@@ -487,7 +487,7 @@ class MaterializedPathConvertionTest extends FunctionalTestCase
 
         $this->assertSame(
             json_encode($this->minimalTree()),
-            json_encode($converter->toTree('children'))
+            json_encode($converter->toAssociativeArrayTree('children'))
         );
     }
 
@@ -499,7 +499,7 @@ class MaterializedPathConvertionTest extends FunctionalTestCase
 
         $this->assertSame(
             json_encode($this->numBasedTree()),
-            json_encode($converter->toTree('children', 'id'))
+            json_encode($converter->toAssociativeArrayTree('children', 'id'))
         );
     }
 
@@ -511,7 +511,7 @@ class MaterializedPathConvertionTest extends FunctionalTestCase
 
         $this->assertSame(
             json_encode($this->slugBasedTree()),
-            json_encode($converter->toTree('children', 'id'))
+            json_encode($converter->toAssociativeArrayTree('children', 'id'))
         );
     }
 
@@ -523,7 +523,7 @@ class MaterializedPathConvertionTest extends FunctionalTestCase
 
         $this->assertSame(
             json_encode($this->numBasedTree()),
-            json_encode($converter->toTree('children', 'id'))
+            json_encode($converter->toAssociativeArrayTree('children', 'id'))
         );
     }
 
@@ -535,7 +535,7 @@ class MaterializedPathConvertionTest extends FunctionalTestCase
 
         $this->assertSame(
             json_encode($this->slugBasedTree()),
-            json_encode($converter->toTree('children', 'id'))
+            json_encode($converter->toAssociativeArrayTree('children', 'id'))
         );
     }
 
@@ -583,7 +583,7 @@ class MaterializedPathConvertionTest extends FunctionalTestCase
 
         $this->assertSame(
             json_encode($tree),
-            json_encode($converter->toTree('children', 'identifier'))
+            json_encode($converter->toAssociativeArrayTree('children', 'identifier'))
         );
     }
 }

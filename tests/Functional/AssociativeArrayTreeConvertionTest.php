@@ -16,7 +16,7 @@ class AssociativeArrayTreeConvertionTest extends FunctionalTestCase
 
         $this->assertSame(
             json_encode($tree),
-            json_encode($converter->toTree())
+            json_encode($converter->toAssociativeArrayTree())
         );
     }
 
@@ -63,7 +63,7 @@ class AssociativeArrayTreeConvertionTest extends FunctionalTestCase
 
         $this->assertSame(
             json_encode($expected),
-            json_encode($converter->toTree('children', 'id'))
+            json_encode($converter->toAssociativeArrayTree('children', 'id'))
         );
     }
 
@@ -113,7 +113,7 @@ class AssociativeArrayTreeConvertionTest extends FunctionalTestCase
 
         $this->assertSame(
             json_encode($expected),
-            json_encode($converter->toTree('leafs', 'identifier'))
+            json_encode($converter->toAssociativeArrayTree('leafs', 'identifier'))
         );
     }
 

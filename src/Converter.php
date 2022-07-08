@@ -45,8 +45,8 @@ class Converter implements TypeConverter
     /**
      * {@inheritdoc}
      */
-    public function toTree($childrenKey = 'children', $idKey = null)
+    public function toAssociativeArrayTree($childrenKey = 'children', $idKey = null)
     {
-        return $this->typeConverter->toTree($childrenKey, $idKey);
+        return $this->typeConverter->toAssociativeArrayTree($childrenKey, $idKey);
     }
 }
