@@ -61,10 +61,14 @@ class MaterializedPathService
      */
     public function rebuildPath($pathKey, $pathSeparator)
     {
-        return array_map(function($node) use ($pathKey, $pathSeparator)  {
+        $needToRenameKey = $this->pathKey !== $pathKey;
+
+        return array_map(function($node) use ($pathKey, $pathSeparator, $needToRenameKey)  {
             $node[$pathKey] = str_replace($this->pathSeparator, $pathSeparator, $node[$this->pathKey]);
 
-            unset($node[$this->pathKey]);
+            if ($needToRenameKey) {
+                unset($node[$this->pathKey]);
+            }
 
             return $node;
         }, $this->nodes);

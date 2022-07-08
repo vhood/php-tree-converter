@@ -7,11 +7,11 @@ use Vhood\TreeType\Service\MaterializedPathService;
 
 class MaterializedPathServiceTest extends TestCase
 {
-    private $actualNodes;
+    private $actual;
 
     public function setUp()
     {
-        $this->actualNodes = [
+        $this->actual = [
             'first' => [
                 'name' => 'node1',
                 'path' => '/1/',
@@ -37,7 +37,7 @@ class MaterializedPathServiceTest extends TestCase
 
     public function testNumBasedNodesIdentification()
     {
-        $expectedNodes = [
+        $expected = [
             [
                 'id' => 1,
                 'name' => 'node1',
@@ -65,16 +65,16 @@ class MaterializedPathServiceTest extends TestCase
             ],
         ];
 
-        $service = new MaterializedPathService($this->actualNodes, 'path', '/');
+        $service = new MaterializedPathService($this->actual, 'path', '/');
 
         $result = array_values($service->identifyNodes('id'));
 
-        $this->assertSame(json_encode($expectedNodes), json_encode($result));
+        $this->assertSame(json_encode($expected), json_encode($result));
     }
 
     public function testSlugBasedNodesIdentification()
     {
-        $actualNodes = [
+        $actual = [
             [
                 'name' => 'node1',
                 'path' => '/one/',
@@ -89,7 +89,7 @@ class MaterializedPathServiceTest extends TestCase
             ],
         ];
 
-        $expectedNodes = [
+        $expected = [
             [
                 'id' => 'one',
                 'name' => 'node1',
@@ -107,16 +107,80 @@ class MaterializedPathServiceTest extends TestCase
             ],
         ];
 
-        $service = new MaterializedPathService($actualNodes, 'path', '/');
+        $service = new MaterializedPathService($actual, 'path', '/');
 
         $result = array_values($service->identifyNodes('id'));
 
-        $this->assertSame(json_encode($expectedNodes), json_encode($result));
+        $this->assertSame(json_encode($expected), json_encode($result));
     }
 
-    public function testPathsRebuilding()
+    public function testRebuildPathKeyOnly()
     {
-        $expectedNodes = [
+        $expected = [
+            [
+                'name' => 'node1',
+                'newPath' => '/1/',
+            ],
+            [
+                'name' => 'node3',
+                'newPath' => '/1/3/',
+            ],
+            [
+                'name' => 'node2',
+                'newPath' => '/1/3/2/',
+            ],
+            [
+                'name' => 'node4',
+                'newPath' => '/1/3/4/',
+            ],
+            [
+                'name' => 'node5',
+                'newPath' => '/1/3/4/5/',
+            ],
+        ];
+
+        $service = new MaterializedPathService($this->actual, 'path', '/');
+
+        $result = array_values($service->rebuildPath('newPath', '/'));
+
+        $this->assertSame(json_encode($expected), json_encode($result));
+    }
+
+    public function testRebuildPathSeparatorOnly()
+    {
+        $expected = [
+            [
+                'name' => 'node1',
+                'path' => '.1.',
+            ],
+            [
+                'name' => 'node3',
+                'path' => '.1.3.',
+            ],
+            [
+                'name' => 'node2',
+                'path' => '.1.3.2.',
+            ],
+            [
+                'name' => 'node4',
+                'path' => '.1.3.4.',
+            ],
+            [
+                'name' => 'node5',
+                'path' => '.1.3.4.5.',
+            ],
+        ];
+
+        $service = new MaterializedPathService($this->actual, 'path', '/');
+
+        $result = array_values($service->rebuildPath('path', '.'));
+
+        $this->assertSame(json_encode($expected), json_encode($result));
+    }
+
+    public function testRebuildPath()
+    {
+        $expected = [
             [
                 'name' => 'node1',
                 'dotPath' => '.1.',
@@ -139,37 +203,37 @@ class MaterializedPathServiceTest extends TestCase
             ],
         ];
 
-        $service = new MaterializedPathService($this->actualNodes, 'path', '/');
+        $service = new MaterializedPathService($this->actual, 'path', '/');
 
         $result = array_values($service->rebuildPath('dotPath', '.'));
 
-        $this->assertSame(json_encode($expectedNodes), json_encode($result));
+        $this->assertSame(json_encode($expected), json_encode($result));
     }
 
     public function testCalculateFirstNodeChildren()
     {
-        $service = new MaterializedPathService($this->actualNodes, 'path', '/');
+        $service = new MaterializedPathService($this->actual, 'path', '/');
 
-        $this->assertSame(4, $service->calculateChildren($this->actualNodes['first']));
+        $this->assertSame(4, $service->calculateChildren($this->actual['first']));
     }
 
     public function testCalculateMiddleNodeChildren()
     {
-        $service = new MaterializedPathService($this->actualNodes, 'path', '/');
+        $service = new MaterializedPathService($this->actual, 'path', '/');
 
-        $this->assertSame(3, $service->calculateChildren($this->actualNodes['middle']));
+        $this->assertSame(3, $service->calculateChildren($this->actual['middle']));
     }
 
     public function testCalculateLastNodeChildren()
     {
-        $service = new MaterializedPathService($this->actualNodes, 'path', '/');
+        $service = new MaterializedPathService($this->actual, 'path', '/');
 
-        $this->assertSame(0, $service->calculateChildren($this->actualNodes['last']));
+        $this->assertSame(0, $service->calculateChildren($this->actual['last']));
     }
 
     public function testLevelsCalculation()
     {
-        $expectedNodes = [
+        $expected = [
             [
                 'name' => 'node1',
                 'path' => '/1/',
@@ -197,10 +261,10 @@ class MaterializedPathServiceTest extends TestCase
             ],
         ];
 
-        $service = new MaterializedPathService($this->actualNodes, 'path', '/');
+        $service = new MaterializedPathService($this->actual, 'path', '/');
 
         $result = array_values($service->calculateLevels('level'));
 
-        $this->assertSame(json_encode($expectedNodes), json_encode($result));
+        $this->assertSame(json_encode($expected), json_encode($result));
     }
 }
