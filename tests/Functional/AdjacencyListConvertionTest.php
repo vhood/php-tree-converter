@@ -2,60 +2,27 @@
 
 namespace Tests\Functional;
 
-use PHPUnit\Framework\TestCase;
+use Tests\_support\FunctionalTestCase;
 use Vhood\TreeType\Converter;
 use Vhood\TreeType\Type\AdjacencyList;
 
-class AdjacencyListConvertionTest extends TestCase
+class AdjacencyListConvertionTest extends FunctionalTestCase
 {
-    protected $tree;
-    protected $al;
-    protected $mp;
-    protected $ns;
-
-    /**
-     * @var Converter
-     */
-    protected $converter;
-
-    public function setUp()
+    public function testConvertToTheSame()
     {
-        $data = require __DIR__ . '/../data/num-based-nodes.php';
+        $al = $this->numBasedNodes(['id', 'parent_id', 'name']);
 
-        $this->tree = require __DIR__ . '/../data/tree/exemplar.php';
+        $converter = new Converter(new AdjacencyList($al));
 
-        $this->al = array_map(function($node) {
-            $al = array_intersect_key($node, ['id' => '', 'name' => '', 'parent_id' => '']);
-            uksort($al, function($k) { return $k !== 'id'; });
-            return $al;
-        }, $data);
-
-        $this->mp = array_map(function($node) {
-            $mp = array_intersect_key($node, ['id' => '', 'name' => '', 'path' => '']);
-            uksort($mp, function($k) { return $k !== 'id'; });
-            return $mp;
-        }, $data);
-
-        $this->ns = array_map(function($node) {
-            $ns = array_intersect_key($node, ['id' => '', 'name' => '', 'lft' => '', 'rgt' => '']);
-            uksort($ns, function($k) { return $k !== 'id'; });
-            return $ns;
-        }, $data);
-
-        $this->converter = new Converter(new AdjacencyList($this->al));
-    }
-
-    public function testConvertToTree()
-    {
         $this->assertSame(
-            json_encode($this->tree),
-            json_encode($this->converter->toTree())
+            json_encode($al),
+            json_encode($converter->toAdjacencyList('id', 'parent_id'))
         );
     }
 
-    public function testConvertToTreeAndRenameIdField()
+    public function testRenameIdKey()
     {
-        $al = [
+        $actual = [
             [
                 'id' => 1,
                 'name' => 'node1',
@@ -68,37 +35,64 @@ class AdjacencyListConvertionTest extends TestCase
             ],
         ];
 
-        $tree = [
+        $expected = [
             [
                 'identifier' => 1,
                 'name' => 'node1',
-                'children' => [
-                    [
-                        'identifier' => 2,
-                        'name' => 'node2',
-                        'children' => [],
-                    ],
-                ],
+                'parent_id' => null,
+            ],
+            [
+                'identifier' => 2,
+                'name' => 'node2',
+                'parent_id' => 1,
             ],
         ];
 
-        $converter = new Converter(new AdjacencyList($al));
+        $converter = new Converter(new AdjacencyList($actual));
 
         $this->assertSame(
-            json_encode($tree),
-            json_encode($converter->toTree('children', 'identifier'))
+            json_encode($expected),
+            json_encode($converter->toAdjacencyList('identifier', 'parent_id'))
         );
     }
 
-    public function testConvertToAL()
+    public function testRenameParentIdKey()
     {
+        $actual = [
+            [
+                'id' => 1,
+                'name' => 'node1',
+                'parent_id' => null,
+            ],
+            [
+                'id' => 2,
+                'name' => 'node2',
+                'parent_id' => 1,
+            ],
+        ];
+
+        $expected = [
+            [
+                'id' => 1,
+                'name' => 'node1',
+                'parentId' => null,
+            ],
+            [
+                'id' => 2,
+                'name' => 'node2',
+                'parentId' => 1,
+            ],
+        ];
+
+        $converter = new Converter(new AdjacencyList($actual));
+
         $this->assertSame(
-            json_encode($this->al),
-            json_encode($this->converter->toAdjacencyList())
+            json_encode($expected),
+            json_encode($converter->toAdjacencyList('id', 'parentId'))
         );
     }
 
-    public function testRenameALFields()
+    public function testRenameIdAndParentIdKeys()
     {
         $actual = [
             [
@@ -134,54 +128,62 @@ class AdjacencyListConvertionTest extends TestCase
         );
     }
 
-    public function testConvertToMP()
+    public function testConvertNumBasedNodesToMinimalMP()
     {
+        $al = $this->numBasedNodes(['id', 'parent_id', 'name']);
+        $mp = $this->numBasedNodes(['path', 'name']);
+
+        $converter = new Converter(new AdjacencyList($al));
+
         $this->assertSame(
-            json_encode($this->mp),
-            json_encode($this->converter->toMaterializedPath())
+            json_encode($mp),
+            json_encode($converter->toMaterializedPath())
         );
     }
 
-    public function testConvertToMPAndCalculateLevels()
+    public function testConvertSlugBasedNodesToMinimalMP()
     {
-        $al = [
-            [
-                'id' => 1,
-                'name' => 'node1',
-                'parent_id' => null,
-            ],
-            [
-                'id' => 2,
-                'name' => 'node2',
-                'parent_id' => 3,
-            ],
-            [
-                'id' => 3,
-                'name' => 'node3',
-                'parent_id' => 1,
-            ],
-        ];
+        $al = $this->slugBasedNodes(['id', 'parent_id', 'name']);
+        $mp = $this->slugBasedNodes(['path', 'name']);
 
-        $mp = [
-            [
-                'id' => 1,
-                'name' => 'node1',
-                'path' => '/1/',
-                'level' => 1,
-            ],
-            [
-                'id' => 2,
-                'name' => 'node2',
-                'path' => '/1/3/2/',
-                'level' => 3,
-            ],
-            [
-                'id' => 3,
-                'name' => 'node3',
-                'path' => '/1/3/',
-                'level' => 2,
-            ],
-        ];
+        $converter = new Converter(new AdjacencyList($al));
+
+        $this->assertSame(
+            json_encode($mp),
+            json_encode($converter->toMaterializedPath())
+        );
+    }
+
+    public function testConvertNumBasedNodesToMPWithIds()
+    {
+        $al = $this->numBasedNodes(['id', 'parent_id', 'name']);
+        $mp = $this->numBasedNodes(['id', 'path', 'name']);
+
+        $converter = new Converter(new AdjacencyList($al));
+
+        $this->assertSame(
+            json_encode($mp),
+            json_encode($converter->toMaterializedPath('path', '/', null, 'id'))
+        );
+    }
+
+    public function testConvertSlugBasedNodesToMPWithIds()
+    {
+        $al = $this->slugBasedNodes(['id', 'parent_id', 'name']);
+        $mp = $this->slugBasedNodes(['id', 'path', 'name']);
+
+        $converter = new Converter(new AdjacencyList($al));
+
+        $this->assertSame(
+            json_encode($mp),
+            json_encode($converter->toMaterializedPath('path', '/', null, 'id'))
+        );
+    }
+
+    public function testConvertNumBasedNodesToMPWithLevels()
+    {
+        $al = $this->numBasedNodes(['id', 'parent_id', 'name']);
+        $mp = $this->numBasedNodes(['path', 'name', 'level']);
 
         $converter = new Converter(new AdjacencyList($al));
 
@@ -191,7 +193,20 @@ class AdjacencyListConvertionTest extends TestCase
         );
     }
 
-    public function testConvertToMPAndRenameIdField()
+    public function testConvertSlugBasedNodesToMPWithLevels()
+    {
+        $al = $this->slugBasedNodes(['id', 'parent_id', 'name']);
+        $mp = $this->slugBasedNodes(['path', 'name', 'level']);
+
+        $converter = new Converter(new AdjacencyList($al));
+
+        $this->assertSame(
+            json_encode($mp),
+            json_encode($converter->toMaterializedPath('path', '/', 'level'))
+        );
+    }
+
+    public function testConvertToMPAndRenameIdKey()
     {
         $al = [
             [
@@ -237,15 +252,42 @@ class AdjacencyListConvertionTest extends TestCase
         );
     }
 
-    public function testConvertToNS()
+    public function testConvertNumBasedNodesToMinimalNS()
     {
+        $al = $this->numBasedNodes(['id', 'parent_id', 'name']);
+        $ns = $this->numBasedNodes(['lft', 'rgt', 'name']);
+
+        $converter = new Converter(new AdjacencyList($al));
+
+
         $this->assertSame(
-            json_encode($this->ns),
-            json_encode($this->converter->toNestedSet())
+            json_encode($ns),
+            json_encode($converter->toNestedSet())
         );
     }
 
-    public function testConvertToNSAndRenameIdField()
+    public function testConvertSlugBasedNodesToMinimalNS()
+    {
+        $al = $this->slugBasedNodes(['id', 'parent_id', 'name']);
+
+        $converter = new Converter(new AdjacencyList($al));
+
+        $ns = $this->slugBasedNodes(['lft', 'rgt', 'name', 'id']);
+        usort($ns, function($firstNode, $secondNode) {
+            return $firstNode['id'] > $secondNode['id'];
+        });
+        $ns = array_map(function($node) {
+            unset($node['id']);
+            return $node;
+        }, $ns);
+
+        $this->assertSame(
+            json_encode($ns),
+            json_encode($converter->toNestedSet())
+        );
+    }
+
+    public function testConvertToNSAndRenameIdKey()
     {
         $al = [
             [
@@ -293,4 +335,91 @@ class AdjacencyListConvertionTest extends TestCase
             json_encode($converter->toNestedSet('lft', 'rgt', 'identifier'))
         );
     }
+
+    public function testConvertNumBasedNodesToMinimalTree()
+    {
+        $al = $this->numBasedNodes(['id', 'parent_id', 'name']);
+
+        $converter = new Converter(new AdjacencyList($al));
+
+        $this->assertSame(
+            json_encode($this->minimalTree()),
+            json_encode($converter->toTree())
+        );
+    }
+
+    public function testConvertSlugBasedNodesToMinimalTree()
+    {
+        $al = $this->slugBasedNodes(['id', 'parent_id', 'name']);
+
+        $converter = new Converter(new AdjacencyList($al));
+
+        $this->assertSame(
+            json_encode($this->minimalTree()),
+            json_encode($converter->toTree())
+        );
+    }
+
+    public function testConvertNumBasedNodesToTreeWithIds()
+    {
+        $al = $this->numBasedNodes(['id', 'parent_id', 'name']);
+
+        $converter = new Converter(new AdjacencyList($al));
+
+        $this->assertSame(
+            json_encode($this->numBasedTree()),
+            json_encode($converter->toTree('children', 'id'))
+        );
+    }
+
+    public function testConvertSlugBasedNodesToTreeWithIds()
+    {
+        $al = $this->slugBasedNodes(['id', 'parent_id', 'name']);
+
+        $converter = new Converter(new AdjacencyList($al));
+
+        $this->assertSame(
+            json_encode($this->slugBasedTree()),
+            json_encode($converter->toTree('children', 'id'))
+        );
+    }
+
+    public function testConvertToTreeAndRenameIdKey()
+    {
+        $al = [
+            [
+                'id' => 1,
+                'name' => 'node1',
+                'parent_id' => null,
+            ],
+            [
+                'id' => 2,
+                'name' => 'node2',
+                'parent_id' => 1,
+            ],
+        ];
+
+        $tree = [
+            [
+                'identifier' => 1,
+                'name' => 'node1',
+                'children' => [
+                    [
+                        'identifier' => 2,
+                        'name' => 'node2',
+                        'children' => [],
+                    ],
+                ],
+            ],
+        ];
+
+        $converter = new Converter(new AdjacencyList($al));
+
+        $this->assertSame(
+            json_encode($tree),
+            json_encode($converter->toTree('children', 'identifier'))
+        );
+    }
+
+
 }

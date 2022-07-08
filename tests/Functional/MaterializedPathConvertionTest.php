@@ -2,60 +2,79 @@
 
 namespace Tests\Functional;
 
-use PHPUnit\Framework\TestCase;
+use Tests\_support\FunctionalTestCase;
 use Vhood\TreeType\Converter;
 use Vhood\TreeType\Type\MaterializedPath;
 
-class MaterializedPathConvertionTest extends TestCase
+class MaterializedPathConvertionTest extends FunctionalTestCase
 {
-    protected $tree;
-    protected $al;
-    protected $mp;
-    protected $ns;
-
-    /**
-     * @var Converter
-     */
-    protected $converter;
-
-    public function setUp()
+    public function testConvertToTheSame()
     {
-        $data = require __DIR__ . '/../data/num-based-nodes.php';
+        $mp = $this->numBasedNodes(['path', 'name']);
 
-        $this->tree = require __DIR__ . '/../data/tree/exemplar.php';
+        $converter = new Converter(new MaterializedPath($mp));
 
-        $this->al = array_map(function($node) {
-            $al = array_intersect_key($node, ['id' => '', 'name' => '', 'parent_id' => '']);
-            uksort($al, function($k) { return $k !== 'id'; });
-            return $al;
-        }, $data);
-
-        $this->mp = array_map(function($node) {
-            $mp = array_intersect_key($node, ['id' => '', 'name' => '', 'path' => '']);
-            uksort($mp, function($k) { return $k !== 'id'; });
-            return $mp;
-        }, $data);
-
-        $this->ns = array_map(function($node) {
-            $ns = array_intersect_key($node, ['id' => '', 'name' => '', 'lft' => '', 'rgt' => '']);
-            uksort($ns, function($k) { return $k !== 'id'; });
-            return $ns;
-        }, $data);
-
-        $this->converter = new Converter(new MaterializedPath($this->mp));
-    }
-
-    public function testConvertToTree()
-    {
         $this->assertSame(
-            json_encode($this->tree),
-            json_encode($this->converter->toTree())
+            json_encode($mp),
+            json_encode($converter->toMaterializedPath())
         );
     }
 
-    public function testConvertToTreeAndIdentifyNodes()
+    public function testCalculateNumBasedNodeLevels()
     {
-        $mp = [
+        $actual = $this->numBasedNodes(['path', 'name']);
+        $expected = $this->numBasedNodes(['path', 'name', 'level']);
+
+        $converter = new Converter(new MaterializedPath($actual));
+
+        $this->assertSame(
+            json_encode($expected),
+            json_encode($converter->toMaterializedPath('path', '/', 'level'))
+        );
+    }
+
+    public function testCalculateSlugBasedNodeLevels()
+    {
+        $actual = $this->slugBasedNodes(['path', 'name']);
+        $expected = $this->slugBasedNodes(['path', 'name', 'level']);
+
+        $converter = new Converter(new MaterializedPath($actual));
+
+        $this->assertSame(
+            json_encode($expected),
+            json_encode($converter->toMaterializedPath('path', '/', 'level'))
+        );
+    }
+
+    public function testNumBasedNodesIdentification()
+    {
+        $actual = $this->numBasedNodes(['path', 'name']);
+        $expected = $this->numBasedNodes(['path', 'name', 'id']);
+
+        $converter = new Converter(new MaterializedPath($actual));
+
+        $this->assertSame(
+            json_encode($expected),
+            json_encode($converter->toMaterializedPath('path', '/', null, 'id'))
+        );
+    }
+
+    public function testSlugBasedNodesIdentification()
+    {
+        $actual = $this->slugBasedNodes(['path', 'name']);
+        $expected = $this->slugBasedNodes(['path', 'name', 'id']);
+
+        $converter = new Converter(new MaterializedPath($actual));
+
+        $this->assertSame(
+            json_encode($expected),
+            json_encode($converter->toMaterializedPath('path', '/', null, 'id'))
+        );
+    }
+
+    public function testRenamePathKey()
+    {
+        $actual = [
             [
                 'name' => 'node1',
                 'path' => '/1/',
@@ -70,43 +89,162 @@ class MaterializedPathConvertionTest extends TestCase
             ],
         ];
 
-        $tree = [
+        $expected = [
             [
-                'id' => 1,
                 'name' => 'node1',
-                'children' => [
-                    [
-                        'id' => 3,
-                        'name' => 'node3',
-                        'children' => [
-                            [
-                                'id' => 2,
-                                'name' => 'node2',
-                                'children' => [],
-                            ],
-                        ],
-                    ],
-                ],
+                'newPath' => '/1/',
+            ],
+            [
+                'name' => 'node2',
+                'newPath' => '/1/3/2/',
+            ],
+            [
+                'name' => 'node3',
+                'newPath' => '/1/3/',
             ],
         ];
+
+        $converter = new Converter(new MaterializedPath($actual));
+
+        $this->assertSame(
+            json_encode($expected),
+            json_encode($converter->toMaterializedPath('newPath', '/'))
+        );
+    }
+
+    public function testChangePathSeparator()
+    {
+        $actual = [
+            [
+                'name' => 'node1',
+                'path' => '/1/',
+            ],
+            [
+                'name' => 'node2',
+                'path' => '/1/3/2/',
+            ],
+            [
+                'name' => 'node3',
+                'path' => '/1/3/',
+            ],
+        ];
+
+        $expected = [
+            [
+                'name' => 'node1',
+                'path' => '.1.',
+            ],
+            [
+                'name' => 'node2',
+                'path' => '.1.3.2.',
+            ],
+            [
+                'name' => 'node3',
+                'path' => '.1.3.',
+            ],
+        ];
+
+        $converter = new Converter(new MaterializedPath($actual));
+
+        $this->assertSame(
+            json_encode($expected),
+            json_encode($converter->toMaterializedPath('path', '.'))
+        );
+    }
+
+    public function testRenamePathKeyAndChangePathSeparator()
+    {
+        $actual = [
+            [
+                'name' => 'node1',
+                'path' => '/1/',
+            ],
+            [
+                'name' => 'node2',
+                'path' => '/1/3/2/',
+            ],
+            [
+                'name' => 'node3',
+                'path' => '/1/3/',
+            ],
+        ];
+
+        $expected = [
+            [
+                'name' => 'node1',
+                'newPath' => '.1.',
+            ],
+            [
+                'name' => 'node2',
+                'newPath' => '.1.3.2.',
+            ],
+            [
+                'name' => 'node3',
+                'newPath' => '.1.3.',
+            ],
+        ];
+
+        $converter = new Converter(new MaterializedPath($actual));
+
+        $this->assertSame(
+            json_encode($expected),
+            json_encode($converter->toMaterializedPath('newPath', '.'))
+        );
+    }
+
+    public function testConvertNumBasedButNotIdentifiedNodesToAL()
+    {
+        $mp = $this->numBasedNodes(['path', 'name']);
+        $al = $this->numBasedNodes(['id', 'parent_id', 'name']);
 
         $converter = new Converter(new MaterializedPath($mp));
 
         $this->assertSame(
-            json_encode($tree),
-            json_encode($converter->toTree('children', 'id'))
+            json_encode($al),
+            json_encode($converter->toAdjacencyList())
         );
     }
 
-    public function testConvertToAL()
+    public function testConvertSlugBasedButNotIdentifiedNodesToAL()
     {
+        $mp = $this->slugBasedNodes(['path', 'name']);
+        $al = $this->slugBasedNodes(['id', 'parent_id', 'name']);
+
+        $converter = new Converter(new MaterializedPath($mp));
+
         $this->assertSame(
-            json_encode($this->al),
-            json_encode($this->converter->toAdjacencyList())
+            json_encode($al),
+            json_encode($converter->toAdjacencyList())
         );
     }
 
-    public function testConvertToALAndRenameExistedIdField()
+    public function testConvertNumBasedNodesToAL()
+    {
+        $mp = $this->numBasedNodes(['id', 'path', 'name']);
+        $al = $this->numBasedNodes(['id', 'parent_id', 'name']);
+
+        $converter = new Converter(new MaterializedPath($mp, 'path', '/', null, 'id'));
+
+        $this->assertSame(
+            json_encode($al),
+            json_encode($converter->toAdjacencyList())
+        );
+    }
+
+    public function testConvertSlugBasedNodesToAL()
+    {
+        $mp = $this->slugBasedNodes(['id', 'path', 'name']);
+        $al = $this->slugBasedNodes(['id', 'parent_id', 'name']);
+
+        $converter = new Converter(new MaterializedPath($mp, 'path', '/', null, 'id'));
+
+        $this->assertSame(
+            json_encode($al),
+            json_encode($converter->toAdjacencyList())
+        );
+    }
+
+    public function testConvertToALAndRenameIdKey()
     {
         $mp = [
             [
@@ -152,165 +290,135 @@ class MaterializedPathConvertionTest extends TestCase
         );
     }
 
-    public function testConvertToMP()
+    public function testNumBasedButNotIdentifiedNodesToNS()
     {
+        $mp = $this->numBasedNodes(['path', 'name']);
+        $ns = $this->numBasedNodes(['lft', 'rgt', 'name']);
+
+        $converter = new Converter(new MaterializedPath($mp));
+
         $this->assertSame(
-            json_encode($this->mp),
-            json_encode($this->converter->toMaterializedPath())
+            json_encode($ns),
+            json_encode($converter->toNestedSet())
         );
     }
 
-    public function testConvertToMPAndCalculateLevels()
+    public function testSlugBasedButNotIdentifiedNodesToNS()
     {
-        $actual = [
-            [
-                'name' => 'node1',
-                'path' => '/1/',
-            ],
-            [
-                'name' => 'node2',
-                'path' => '/1/3/2/',
-            ],
-            [
-                'name' => 'node3',
-                'path' => '/1/3/',
-            ],
-        ];
+        $mp = $this->slugBasedNodes(['path', 'name']);
 
-        $expected = [
-            [
-                'name' => 'node1',
-                'path' => '/1/',
-                'level' => 1,
-            ],
-            [
-                'name' => 'node2',
-                'path' => '/1/3/2/',
-                'level' => 3,
-            ],
-            [
-                'name' => 'node3',
-                'path' => '/1/3/',
-                'level' => 2,
-            ],
-        ];
+        $converter = new Converter(new MaterializedPath($mp));
 
-        $converter = new Converter(new MaterializedPath($actual));
-
-        $this->assertSame(
-            json_encode($expected),
-            json_encode($converter->toMaterializedPath('path', '/', 'level'))
-        );
-    }
-
-    public function testConvertToMPAndIdentifyNumBasedNodes()
-    {
-        $actual = [
-            [
-                'name' => 'node1',
-                'path' => '/1/',
-            ],
-            [
-                'name' => 'node2',
-                'path' => '/1/3/2/',
-            ],
-            [
-                'name' => 'node3',
-                'path' => '/1/3/',
-            ],
-        ];
-
-        $expected = [
-            [
-                'id' => 1,
-                'name' => 'node1',
-                'path' => '/1/',
-            ],
-            [
-                'id' => 2,
-                'name' => 'node2',
-                'path' => '/1/3/2/',
-            ],
-            [
-                'id' => 3,
-                'name' => 'node3',
-                'path' => '/1/3/',
-            ],
-        ];
-
-        $converter = new Converter(new MaterializedPath($actual));
-
-        $this->assertSame(
-            json_encode($expected),
-            json_encode($converter->toMaterializedPath('path', '/', null, 'id'))
-        );
-    }
-
-    public function testConvertToMPAndIdentifySlugBasedNodes()
-    {
-        $actual = [
-            [
-                'name' => 'node1',
-                'path' => '/one/',
-            ],
-            [
-                'name' => 'node2',
-                'path' => '/one/three/two/',
-            ],
-            [
-                'name' => 'node3',
-                'path' => '/one/three/',
-            ],
-        ];
-
-        $expected = [
-            [
-                'id' => 'one',
-                'name' => 'node1',
-                'path' => '/one/',
-            ],
-            [
-                'id' => 'two',
-                'name' => 'node2',
-                'path' => '/one/three/two/',
-            ],
-            [
-                'id' => 'three',
-                'name' => 'node3',
-                'path' => '/one/three/',
-            ],
-        ];
-
-        $converter = new Converter(new MaterializedPath($actual));
-
-        $this->assertSame(
-            json_encode($expected),
-            json_encode($converter->toMaterializedPath('path', '/', null, 'id'))
-        );
-    }
-
-    public function testConvertToNS()
-    {
-        $notIdentifiedNS = array_map(function($node) {
+        $ns = $this->slugBasedNodes(['lft', 'rgt', 'name', 'id']);
+        usort($ns, function($firstNode, $secondNode) {
+            return $firstNode['id'] > $secondNode['id'];
+        });
+        $ns = array_map(function($node) {
             unset($node['id']);
             return $node;
-        }, $this->ns);
+        }, $ns);
 
         $this->assertSame(
-            json_encode($notIdentifiedNS),
-            json_encode($this->converter->toNestedSet())
+            json_encode($ns),
+            json_encode($converter->toNestedSet())
         );
     }
 
-    public function testConvertToNSAndIdentifyNodes()
+    public function testNumBasedNodesToMinimalNS()
     {
+        $mp = $this->numBasedNodes(['id', 'path', 'name']);
+        $ns = $this->numBasedNodes(['lft', 'rgt', 'name']);
+
+        $converter = new Converter(new MaterializedPath($mp, 'path', '/', null, 'id'));
+
         $this->assertSame(
-            json_encode($this->ns),
-            json_encode($this->converter->toNestedSet('lft', 'rgt', 'id'))
+            json_encode($ns),
+            json_encode($converter->toNestedSet('lft', 'rgt'))
         );
     }
 
-    public function testConvertToNSAndRenameExistedIdField()
+    public function testSlugBasedNodesToMinimalNS()
+    {
+        $mp = $this->slugBasedNodes(['id', 'path', 'name']);
+
+        $converter = new Converter(new MaterializedPath($mp, 'path', '/', null, 'id'));
+
+        $ns = $this->slugBasedNodes(['id', 'lft', 'rgt', 'name']);
+        usort($ns, function($firstNode, $secondNode) {
+            return $firstNode['id'] > $secondNode['id'];
+        });
+        $ns = array_map(function($node) {
+            unset($node['id']);
+            return $node;
+        }, $ns);
+
+        $this->assertSame(
+            json_encode($ns),
+            json_encode($converter->toNestedSet('lft', 'rgt'))
+        );
+    }
+
+    public function testNumBasedNodesToNS()
+    {
+        $mp = $this->numBasedNodes(['id', 'path', 'name']);
+        $ns = $this->numBasedNodes(['id', 'lft', 'rgt', 'name']);
+
+        $converter = new Converter(new MaterializedPath($mp, 'path', '/', null, 'id'));
+
+        $this->assertSame(
+            json_encode($ns),
+            json_encode($converter->toNestedSet('lft', 'rgt', 'id'))
+        );
+    }
+
+    public function testSlugBasedNodesToNS()
+    {
+        $mp = $this->slugBasedNodes(['id', 'path', 'name']);
+
+        $converter = new Converter(new MaterializedPath($mp, 'path', '/', null, 'id'));
+
+        $ns = $this->slugBasedNodes(['id', 'lft', 'rgt', 'name']);
+        usort($ns, function($firstNode, $secondNode) {
+            return $firstNode['id'] > $secondNode['id'];
+        });
+
+        $this->assertSame(
+            json_encode($ns),
+            json_encode($converter->toNestedSet('lft', 'rgt', 'id'))
+        );
+    }
+
+    public function testConvertNumBasedButNotIdentifiedNodesToNSAndIdentifyThem()
+    {
+        $mp = $this->numBasedNodes(['path', 'name']);
+        $ns = $this->numBasedNodes(['id', 'lft', 'rgt', 'name']);
+
+        $converter = new Converter(new MaterializedPath($mp));
+
+        $this->assertSame(
+            json_encode($ns),
+            json_encode($converter->toNestedSet('lft', 'rgt', 'id'))
+        );
+    }
+
+    public function testConvertSlugBasedButNotIdentifiedNodesToNSAndIdentifyThem()
+    {
+        $mp = $this->slugBasedNodes(['path', 'name']);
+
+        $converter = new Converter(new MaterializedPath($mp));
+
+        $ns = $this->slugBasedNodes(['id', 'lft', 'rgt', 'name']);
+        usort($ns, function($firstNode, $secondNode) {
+            return $firstNode['id'] > $secondNode['id'];
+        });
+
+        $this->assertSame(
+            json_encode($ns),
+            json_encode($converter->toNestedSet('lft', 'rgt', 'id'))
+        );
+    }
+
+    public function testConvertToNSAndRenameIdKey()
     {
         $mp = [
             [
@@ -356,6 +464,150 @@ class MaterializedPathConvertionTest extends TestCase
         $this->assertSame(
             json_encode($ns),
             json_encode($converter->toNestedSet('lft', 'rgt', 'identifier'))
+        );
+    }
+
+    public function testConvertNumBasedButNotIdentifiedNodesToTree()
+    {
+        $mp = $this->numBasedNodes(['path', 'name']);
+
+        $converter = new Converter(new MaterializedPath($mp));
+
+        $this->assertSame(
+            json_encode($this->minimalTree()),
+            json_encode($converter->toTree())
+        );
+    }
+
+    public function testConvertSlugBasedButNotIdentifiedNodesToTree()
+    {
+        $mp = $this->slugBasedNodes(['path', 'name']);
+
+        $converter = new Converter(new MaterializedPath($mp));
+
+        $this->assertSame(
+            json_encode($this->minimalTree()),
+            json_encode($converter->toTree())
+        );
+    }
+
+    public function testConvertNumBasedNodesToMinimalTree()
+    {
+        $mp = $this->numBasedNodes(['id', 'path', 'name']);
+
+        $converter = new Converter(new MaterializedPath($mp, 'path', '/', null, 'id'));
+
+        $this->assertSame(
+            json_encode($this->minimalTree()),
+            json_encode($converter->toTree('children'))
+        );
+    }
+
+    public function testConvertSlugBasedNodesToMinimalTree()
+    {
+        $mp = $this->slugBasedNodes(['id', 'path', 'name']);
+
+        $converter = new Converter(new MaterializedPath($mp, 'path', '/', null, 'id'));
+
+        $this->assertSame(
+            json_encode($this->minimalTree()),
+            json_encode($converter->toTree('children'))
+        );
+    }
+
+    public function testConvertNumBasedNodesToTree()
+    {
+        $mp = $this->numBasedNodes(['id', 'path', 'name']);
+
+        $converter = new Converter(new MaterializedPath($mp, 'path', '/', null, 'id'));
+
+        $this->assertSame(
+            json_encode($this->numBasedTree()),
+            json_encode($converter->toTree('children', 'id'))
+        );
+    }
+
+    public function testConvertSlugBasedNodesToTree()
+    {
+        $mp = $this->slugBasedNodes(['id', 'path', 'name']);
+
+        $converter = new Converter(new MaterializedPath($mp, 'path', '/', null, 'id'));
+
+        $this->assertSame(
+            json_encode($this->slugBasedTree()),
+            json_encode($converter->toTree('children', 'id'))
+        );
+    }
+
+    public function testConvertNumBasedButNotIdentifiedNodesToTreeAndIdentifyThem()
+    {
+        $mp = $this->numBasedNodes(['path', 'name']);
+
+        $converter = new Converter(new MaterializedPath($mp));
+
+        $this->assertSame(
+            json_encode($this->numBasedTree()),
+            json_encode($converter->toTree('children', 'id'))
+        );
+    }
+
+    public function testConvertSlugBasedButNotIdentifiedNodesToTreeAndIdentifyThem()
+    {
+        $mp = $this->slugBasedNodes(['path', 'name']);
+
+        $converter = new Converter(new MaterializedPath($mp));
+
+        $this->assertSame(
+            json_encode($this->slugBasedTree()),
+            json_encode($converter->toTree('children', 'id'))
+        );
+    }
+
+    public function testConvertToTreeAndRenameIdKey()
+    {
+        $mp = [
+            [
+                'id' => 1,
+                'name' => 'node1',
+                'path' => '/1/',
+            ],
+            [
+                'id' => 2,
+                'name' => 'node2',
+                'path' => '/1/3/2/',
+            ],
+            [
+                'id' => 3,
+                'name' => 'node3',
+                'path' => '/1/3/',
+            ],
+        ];
+
+        $tree = [
+            [
+                'identifier' => 1,
+                'name' => 'node1',
+                'children' => [
+                    [
+                        'identifier' => 3,
+                        'name' => 'node3',
+                        'children' => [
+                            [
+                                'identifier' => 2,
+                                'name' => 'node2',
+                                'children' => [],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $converter = new Converter(new MaterializedPath($mp, 'path', '/', null, 'id'));
+
+        $this->assertSame(
+            json_encode($tree),
+            json_encode($converter->toTree('children', 'identifier'))
         );
     }
 }

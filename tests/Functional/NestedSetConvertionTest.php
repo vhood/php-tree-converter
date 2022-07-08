@@ -2,60 +2,27 @@
 
 namespace Tests\Functional;
 
-use PHPUnit\Framework\TestCase;
+use Tests\_support\FunctionalTestCase;
 use Vhood\TreeType\Converter;
 use Vhood\TreeType\Type\NestedSet;
 
-class NestedSetConvertionTest extends TestCase
+class NestedSetConvertionTest extends FunctionalTestCase
 {
-    protected $tree;
-    protected $al;
-    protected $mp;
-    protected $ns;
-
-    /**
-     * @var Converter
-     */
-    protected $converter;
-
-    public function setUp()
+    public function testConvertToTheSame()
     {
-        $data = require __DIR__ . '/../data/num-based-nodes.php';
+        $ns = $this->numBasedNodes(['lft', 'rgt', 'name']);
 
-        $this->tree = require __DIR__ . '/../data/tree/exemplar.php';
+        $converter = new Converter(new NestedSet($ns));
 
-        $this->al = array_map(function($node) {
-            $al = array_intersect_key($node, ['id' => '', 'name' => '', 'parent_id' => '']);
-            uksort($al, function($k) { return $k !== 'id'; });
-            return $al;
-        }, $data);
-
-        $this->mp = array_map(function($node) {
-            $mp = array_intersect_key($node, ['id' => '', 'name' => '', 'path' => '']);
-            uksort($mp, function($k) { return $k !== 'id'; });
-            return $mp;
-        }, $data);
-
-        $this->ns = array_map(function($node) {
-            $ns = array_intersect_key($node, ['id' => '', 'name' => '', 'lft' => '', 'rgt' => '']);
-            uksort($ns, function($k) { return $k !== 'id'; });
-            return $ns;
-        }, $data);
-
-        $this->converter = new Converter(new NestedSet($this->ns));
-    }
-
-    public function testConvertToTree()
-    {
         $this->assertSame(
-            json_encode($this->tree),
-            json_encode($this->converter->toTree())
+            json_encode($ns),
+            json_encode($converter->toNestedSet())
         );
     }
 
-    public function testConvertToTreeAndIdentifyNodes()
+    public function testNodesIdentification()
     {
-        $ns = [
+        $actual = [
             [
                 'name' => 'node1',
                 'lft' => 1,
@@ -73,35 +40,328 @@ class NestedSetConvertionTest extends TestCase
             ],
         ];
 
-        $tree = [
+        $expected = [
             [
                 'id' => 1,
                 'name' => 'node1',
-                'children' => [
-                    [
-                        'id' => 2,
-                        'name' => 'node3',
-                        'children' => [
-                            [
-                                'id' => 3,
-                                'name' => 'node2',
-                                'children' => [],
-                            ],
-                        ],
-                    ],
-                ],
+                'lft' => 1,
+                'rgt' => 6,
+            ],
+            [
+                'id' => 2,
+                'name' => 'node3',
+                'lft' => 2,
+                'rgt' => 5,
+            ],
+            [
+                'id' => 3,
+                'name' => 'node2',
+                'lft' => 3,
+                'rgt' => 4,
             ],
         ];
 
-        $converter = new Converter(new NestedSet($ns, 'lft', 'rgt'));
+        $converter = new Converter(new NestedSet($actual));
 
         $this->assertSame(
-            json_encode($tree),
-            json_encode($converter->toTree('children', 'id'))
+            json_encode($expected),
+            json_encode($converter->toNestedSet('lft', 'rgt', 'id'))
         );
     }
 
-    public function testConvertToTreeAndRenameExistedIdField()
+    public function testRenameLeftValueKey()
+    {
+        $actual = [
+            [
+                'name' => 'node1',
+                'lft' => 1,
+                'rgt' => 6,
+            ],
+            [
+                'name' => 'node2',
+                'lft' => 3,
+                'rgt' => 4,
+            ],
+            [
+                'name' => 'node3',
+                'lft' => 2,
+                'rgt' => 5,
+            ],
+        ];
+
+        $expected = [
+            [
+                'name' => 'node1',
+                'left' => 1,
+                'rgt' => 6,
+            ],
+            [
+                'name' => 'node2',
+                'left' => 3,
+                'rgt' => 4,
+            ],
+            [
+                'name' => 'node3',
+                'left' => 2,
+                'rgt' => 5,
+            ],
+        ];
+
+        $converter = new Converter(new NestedSet($actual));
+
+        $this->assertSame(
+            json_encode($expected),
+            json_encode($converter->toNestedSet('left'))
+        );
+    }
+
+    public function testRenameRightValueKey()
+    {
+        $actual = [
+            [
+                'name' => 'node1',
+                'lft' => 1,
+                'rgt' => 6,
+            ],
+            [
+                'name' => 'node2',
+                'lft' => 3,
+                'rgt' => 4,
+            ],
+            [
+                'name' => 'node3',
+                'lft' => 2,
+                'rgt' => 5,
+            ],
+        ];
+
+        $expected = [
+            [
+                'name' => 'node1',
+                'lft' => 1,
+                'right' => 6,
+            ],
+            [
+                'name' => 'node2',
+                'lft' => 3,
+                'right' => 4,
+            ],
+            [
+                'name' => 'node3',
+                'lft' => 2,
+                'right' => 5,
+            ],
+        ];
+
+        $converter = new Converter(new NestedSet($actual));
+
+        $this->assertSame(
+            json_encode($expected),
+            json_encode($converter->toNestedSet('lft', 'right'))
+        );
+    }
+
+    public function testRenameIdKey()
+    {
+        $actual = [
+            [
+                'id' => 1,
+                'name' => 'node1',
+                'lft' => 1,
+                'rgt' => 6,
+            ],
+            [
+                'id' => 2,
+                'name' => 'node2',
+                'lft' => 3,
+                'rgt' => 4,
+            ],
+            [
+                'id' => 3,
+                'name' => 'node3',
+                'lft' => 2,
+                'rgt' => 5,
+            ],
+        ];
+
+        $expected = [
+            [
+                'identifier' => 1,
+                'name' => 'node1',
+                'lft' => 1,
+                'rgt' => 6,
+            ],
+            [
+                'identifier' => 2,
+                'name' => 'node2',
+                'lft' => 3,
+                'rgt' => 4,
+            ],
+            [
+                'identifier' => 3,
+                'name' => 'node3',
+                'lft' => 2,
+                'rgt' => 5,
+            ],
+        ];
+
+        $converter = new Converter(new NestedSet($actual, 'lft', 'rgt', 'id'));
+
+        $this->assertSame(
+            json_encode($expected),
+            json_encode($converter->toNestedSet('lft', 'rgt', 'identifier'))
+        );
+    }
+
+    public function testRenameKeys()
+    {
+        $actual = [
+            [
+                'id' => 1,
+                'name' => 'node1',
+                'lft' => 1,
+                'rgt' => 6,
+            ],
+            [
+                'id' => 2,
+                'name' => 'node2',
+                'lft' => 3,
+                'rgt' => 4,
+            ],
+            [
+                'id' => 3,
+                'name' => 'node3',
+                'lft' => 2,
+                'rgt' => 5,
+            ],
+        ];
+
+        $expected = [
+            [
+                'identifier' => 1,
+                'name' => 'node1',
+                'left' => 1,
+                'right' => 6,
+            ],
+            [
+                'identifier' => 2,
+                'name' => 'node2',
+                'left' => 3,
+                'right' => 4,
+            ],
+            [
+                'identifier' => 3,
+                'name' => 'node3',
+                'left' => 2,
+                'right' => 5,
+            ],
+        ];
+
+        $converter = new Converter(new NestedSet($actual, 'lft', 'rgt', 'id'));
+
+        $this->assertSame(
+            json_encode($expected),
+            json_encode($converter->toNestedSet('left', 'right', 'identifier'))
+        );
+    }
+
+    public function testConvertNotIdentifiedNodesToAL()
+    {
+        $ns = [
+            [
+                'name' => 'node1',
+                'lft' => 1,
+                'rgt' => 10,
+            ],
+            [
+                'name' => 'node2',
+                'lft' => 3,
+                'rgt' => 4,
+            ],
+            [
+                'name' => 'node3',
+                'lft' => 2,
+                'rgt' => 9,
+            ],
+            [
+                'name' => 'node4',
+                'lft' => 5,
+                'rgt' => 8,
+            ],
+            [
+                'name' => 'node5',
+                'lft' => 6,
+                'rgt' => 7,
+            ],
+        ];
+
+        $al = [
+            [
+                'id' => 1,
+                'name' => 'node1',
+                'parent_id' => null,
+            ],
+            [
+                'id' => 2,
+                'name' => 'node3',
+                'parent_id' => 1,
+            ],
+            [
+                'id' => 3,
+                'name' => 'node2',
+                'parent_id' => 2,
+            ],
+            [
+                'id' => 4,
+                'name' => 'node4',
+                'parent_id' => 2,
+            ],
+            [
+                'id' => 5,
+                'name' => 'node5',
+                'parent_id' => 4,
+            ],
+        ];
+
+        $converter = new Converter(new NestedSet($ns));
+
+        $this->assertSame(
+            json_encode($al),
+            json_encode($converter->toAdjacencyList())
+        );
+    }
+
+    public function testConvertNumBasedNodesToAL()
+    {
+        $ns = $this->numBasedNodes(['id', 'lft', 'rgt', 'name']);
+        $al = $this->numBasedNodes(['id', 'parent_id', 'name']);
+
+        $converter = new Converter(new NestedSet($ns, 'lft', 'rgt', 'id'));
+
+        $this->assertSame(
+            json_encode($al),
+            json_encode($converter->toAdjacencyList())
+        );
+    }
+
+    public function testConvertSlugBasedNodesToAL()
+    {
+        $ns = $this->slugBasedNodes(['id', 'lft', 'rgt', 'name']);
+
+        $converter = new Converter(new NestedSet($ns, 'lft', 'rgt', 'id'));
+
+        $al = $this->slugBasedNodes(['id', 'parent_id', 'name']);
+        usort($al, function($firstNode, $secondNode) {
+            return $firstNode['id'] > $secondNode['id'];
+        });
+
+        $this->assertSame(
+            json_encode($al),
+            json_encode($converter->toAdjacencyList())
+        );
+    }
+
+    public function testConvertToALAndRenameIdKey()
     {
         $ns = [
             [
@@ -124,40 +384,67 @@ class NestedSetConvertionTest extends TestCase
             ],
         ];
 
-        $tree = [
+        $al = [
             [
                 'identifier' => 1,
                 'name' => 'node1',
-                'children' => [
-                    [
-                        'identifier' => 3,
-                        'name' => 'node3',
-                        'children' => [
-                            [
-                                'identifier' => 2,
-                                'name' => 'node2',
-                                'children' => [],
-                            ],
-                        ],
-                    ],
-                ],
+                'parent_id' => null,
+            ],
+            [
+                'identifier' => 2,
+                'name' => 'node2',
+                'parent_id' => 3,
+            ],
+            [
+                'identifier' => 3,
+                'name' => 'node3',
+                'parent_id' => 1,
             ],
         ];
 
         $converter = new Converter(new NestedSet($ns, 'lft', 'rgt', 'id'));
 
         $this->assertSame(
-            json_encode($tree),
-            json_encode($converter->toTree('children', 'identifier'))
+            json_encode($al),
+            json_encode($converter->toAdjacencyList('identifier'))
         );
     }
 
-    public function testConvertToMP()
+    public function testConvertNumBasedNodesToMinimalMP()
     {
-        $converter = new Converter(new NestedSet($this->ns, 'lft', 'rgt', 'id'));
+        $ns = $this->numBasedNodes(['id', 'lft', 'rgt', 'name']);
+        $mp = $this->numBasedNodes(['path', 'name']);
+
+        $converter = new Converter(new NestedSet($ns, 'lft', 'rgt', 'id'));
 
         $this->assertSame(
-            json_encode($this->mp),
+            json_encode($mp),
+            json_encode($converter->toMaterializedPath())
+        );
+    }
+
+    public function testConvertSlugBasedNodesToMinimalMP()
+    {
+        $ns = $this->slugBasedNodes(['id', 'lft', 'rgt', 'name']);
+        $mp = $this->slugBasedNodes(['path', 'name']);
+
+        $converter = new Converter(new NestedSet($ns, 'lft', 'rgt', 'id'));
+
+        $this->assertSame(
+            json_encode($mp),
+            json_encode($converter->toMaterializedPath())
+        );
+    }
+
+    public function testConvertNumBasedNodesToMPWithIds()
+    {
+        $ns = $this->numBasedNodes(['id', 'lft', 'rgt', 'name']);
+        $mp = $this->numBasedNodes(['id', 'path', 'name']);
+
+        $converter = new Converter(new NestedSet($ns, 'lft', 'rgt', 'id'));
+
+        $this->assertSame(
+            json_encode($mp),
             json_encode($converter->toMaterializedPath('path', '/', null, 'id'))
         );
     }
@@ -254,66 +541,9 @@ class NestedSetConvertionTest extends TestCase
         );
     }
 
-    public function testConvertToNS()
+    public function testConvertToMPAndRenameIdKey()
     {
-        $this->assertSame(
-            json_encode($this->ns),
-            json_encode($this->converter->toNestedSet())
-        );
-    }
-
-    public function testConvertToNSAndIdentifyNodes()
-    {
-        $actual = [
-            [
-                'name' => 'node1',
-                'lft' => 1,
-                'rgt' => 6,
-            ],
-            [
-                'name' => 'node2',
-                'lft' => 3,
-                'rgt' => 4,
-            ],
-            [
-                'name' => 'node3',
-                'lft' => 2,
-                'rgt' => 5,
-            ],
-        ];
-
-        $expected = [
-            [
-                'id' => 1,
-                'name' => 'node1',
-                'lft' => 1,
-                'rgt' => 6,
-            ],
-            [
-                'id' => 2,
-                'name' => 'node3',
-                'lft' => 2,
-                'rgt' => 5,
-            ],
-            [
-                'id' => 3,
-                'name' => 'node2',
-                'lft' => 3,
-                'rgt' => 4,
-            ],
-        ];
-
-        $converter = new Converter(new NestedSet($actual));
-
-        $this->assertSame(
-            json_encode($expected),
-            json_encode($converter->toNestedSet('lft', 'rgt', 'id'))
-        );
-    }
-
-    public function testConvertToNSAndRenameFields()
-    {
-        $actual = [
+        $ns = [
             [
                 'id' => 1,
                 'name' => 'node1',
@@ -334,32 +564,176 @@ class NestedSetConvertionTest extends TestCase
             ],
         ];
 
-        $expected = [
+        $mp = [
             [
                 'identifier' => 1,
                 'name' => 'node1',
-                'left' => 1,
-                'right' => 6,
+                'path' => '/1/',
             ],
             [
                 'identifier' => 2,
                 'name' => 'node2',
-                'left' => 3,
-                'right' => 4,
+                'path' => '/1/3/2/',
             ],
             [
                 'identifier' => 3,
                 'name' => 'node3',
-                'left' => 2,
-                'right' => 5,
+                'path' => '/1/3/',
             ],
         ];
 
-        $converter = new Converter(new NestedSet($actual, 'lft', 'rgt', 'id'));
+        $converter = new Converter(new NestedSet($ns, 'lft', 'rgt', 'id'));
 
         $this->assertSame(
-            json_encode($expected),
-            json_encode($converter->toNestedSet('left', 'right', 'identifier'))
+            json_encode($mp),
+            json_encode($converter->toMaterializedPath('path', '/', null, 'identifier'))
+        );
+    }
+
+    public function testConvertNumBasedNodesToMinimalTree()
+    {
+        $ns = $this->numBasedNodes(['id', 'lft', 'rgt', 'name']);
+
+        $converter = new Converter(new NestedSet($ns, 'lft', 'rgt', 'id'));
+
+        $this->assertSame(
+            json_encode($this->minimalTree()),
+            json_encode($converter->toTree())
+        );
+    }
+
+    public function testConvertSlugBasedNodesToMinimalTree()
+    {
+        $ns = $this->slugBasedNodes(['id', 'lft', 'rgt', 'name']);
+
+        $converter = new Converter(new NestedSet($ns, 'lft', 'rgt', 'id'));
+
+        $this->assertSame(
+            json_encode($this->minimalTree()),
+            json_encode($converter->toTree())
+        );
+    }
+
+    public function testConvertNumBasedNodesToTreeWithIds()
+    {
+        $ns = $this->numBasedNodes(['id', 'lft', 'rgt', 'name']);
+
+        $converter = new Converter(new NestedSet($ns, 'lft', 'rgt', 'id'));
+
+        $this->assertSame(
+            json_encode($this->numBasedTree()),
+            json_encode($converter->toTree('children', 'id'))
+        );
+    }
+
+    public function testConvertSlugBasedNodesToTreeWithIds()
+    {
+        $ns = $this->slugBasedNodes(['id', 'lft', 'rgt', 'name']);
+
+        $converter = new Converter(new NestedSet($ns, 'lft', 'rgt', 'id'));
+
+        $this->assertSame(
+            json_encode($this->slugBasedTree()),
+            json_encode($converter->toTree('children', 'id'))
+        );
+    }
+
+    public function testConvertToTreeAndIdentifyNodes()
+    {
+        $ns = [
+            [
+                'name' => 'node1',
+                'lft' => 1,
+                'rgt' => 6,
+            ],
+            [
+                'name' => 'node2',
+                'lft' => 3,
+                'rgt' => 4,
+            ],
+            [
+                'name' => 'node3',
+                'lft' => 2,
+                'rgt' => 5,
+            ],
+        ];
+
+        $tree = [
+            [
+                'id' => 1,
+                'name' => 'node1',
+                'children' => [
+                    [
+                        'id' => 2,
+                        'name' => 'node3',
+                        'children' => [
+                            [
+                                'id' => 3,
+                                'name' => 'node2',
+                                'children' => [],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $converter = new Converter(new NestedSet($ns, 'lft', 'rgt'));
+
+        $this->assertSame(
+            json_encode($tree),
+            json_encode($converter->toTree('children', 'id'))
+        );
+    }
+
+    public function testConvertToTreeAndRenameIdKey()
+    {
+        $ns = [
+            [
+                'id' => 1,
+                'name' => 'node1',
+                'lft' => 1,
+                'rgt' => 6,
+            ],
+            [
+                'id' => 2,
+                'name' => 'node2',
+                'lft' => 3,
+                'rgt' => 4,
+            ],
+            [
+                'id' => 3,
+                'name' => 'node3',
+                'lft' => 2,
+                'rgt' => 5,
+            ],
+        ];
+
+        $tree = [
+            [
+                'identifier' => 1,
+                'name' => 'node1',
+                'children' => [
+                    [
+                        'identifier' => 3,
+                        'name' => 'node3',
+                        'children' => [
+                            [
+                                'identifier' => 2,
+                                'name' => 'node2',
+                                'children' => [],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $converter = new Converter(new NestedSet($ns, 'lft', 'rgt', 'id'));
+
+        $this->assertSame(
+            json_encode($tree),
+            json_encode($converter->toTree('children', 'identifier'))
         );
     }
 }
