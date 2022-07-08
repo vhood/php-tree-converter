@@ -15,6 +15,7 @@ class AdjacencyListServiceTest extends TestCase
         $this->numBasedNodes = [
             'first' => [
                 'id' => 1,
+                'parent_id' => null,
                 'name' => 'node1',
             ],
             [
@@ -42,6 +43,7 @@ class AdjacencyListServiceTest extends TestCase
         $this->slugBasedNodes = [
             'first' => [
                 'id' => 'one',
+                'parent_id' => null,
                 'name' => 'node1',
             ],
             [

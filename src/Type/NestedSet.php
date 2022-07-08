@@ -28,7 +28,7 @@ class NestedSet implements TreeType
                 throw new InvalidStructureException("Node $index has no left value field");
             }
 
-            if (!array_key_exists($leftValueKey, $node)) {
+            if (!array_key_exists($rightValueKey, $node)) {
                 throw new InvalidStructureException("Node $index has no right value field");
             }
 
