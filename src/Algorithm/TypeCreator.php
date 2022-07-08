@@ -3,10 +3,10 @@
 namespace Vhood\TreeType\Algorithm;
 
 use Vhood\TreeType\Service\NodeService;
-use Vhood\TreeType\Contract\ConvertionAlgorithm;
+use Vhood\TreeType\Contract\ConvertingAlgorithm;
 use Vhood\TreeType\Service\FlatNodesService;
 
-abstract class TypeCreator implements ConvertionAlgorithm
+abstract class TypeCreator implements ConvertingAlgorithm
 {
     /**
      * @param array $nodes

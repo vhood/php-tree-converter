@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `$noParentValue` parameter for MP to AL convertion
+- `$noParentValue` parameter for MP to AL converting
 
 ### Changed
 
@@ -27,66 +27,66 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Associative array tree to nested set convertion
-- Associative array tree to nested set convertion test
+- Associative array tree to nested set converting
+- Associative array tree to nested set converting test
 
 ## [0.8.0] - 2022-05-16
 
 ### Added
 
-- Associative array tree to materialized path convertion
-- Associative array tree to materialized path convertion test
+- Associative array tree to materialized path converting
+- Associative array tree to materialized path converting test
 
 ## [0.7.0] - 2022-05-13
 
 ### Added
 
-- Associative array tree to adjacency list convertion
-- Associative array tree to adjacency list convertion test
-- `$noParentValue` parameter for NS to AL convertion
+- Associative array tree to adjacency list converting
+- Associative array tree to adjacency list converting test
+- `$noParentValue` parameter for NS to AL converting
 
 ## [0.6.0] - 2022-04-22
 
 ### Added
 
-- Nested set to adjacency list convertion
-- Nested set to materialized path convertion
-- Nested set convertion tests
+- Nested set to adjacency list converting
+- Nested set to materialized path converting
+- Nested set converting tests
 
 ## [0.5.0] - 2022-04-22
 
 ### Added
 
-- Nested set to associative array tree convertion
-- Nested set to associative array tree convertion test
+- Nested set to associative array tree converting
+- Nested set to associative array tree converting test
 
 ## [0.4.0] - 2022-04-05
 
 ### Added
 
-- Materialized path to adjacency list convertion
-- Materialized path to nested set convertion
-- Materialized path to associative array tree convertion
-- Materialized path convertion tests
+- Materialized path to adjacency list converting
+- Materialized path to nested set converting
+- Materialized path to associative array tree converting
+- Materialized path converting tests
 
 ### Fixed
 
 - materialized path data example
-- Adjacency list to materialized path convertion
+- Adjacency list to materialized path converting
 
 ## [0.3.0] - 2022-03-31
 
 ### Added
 
-- Adjacency list to nested set convertion
-- Adjacency list to nested set convertion test
+- Adjacency list to nested set converting
+- Adjacency list to nested set converting test
 
 ## [0.2.0] - 2022-03-29
 
 ### Added
 
-- Adjacency list to materialized path convertion
-- Adjacency list to materialized path convertion test
+- Adjacency list to materialized path converting
+- Adjacency list to materialized path converting test
 
 ## [0.1.1] - 2022-03-23
 
@@ -98,8 +98,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Adjacency list to associative array tree convertion
-- Adjacency list to associative array tree convertion test
-- Same type convertion tests
-- Green line tests for other convertions
+- Adjacency list to associative array tree converting
+- Adjacency list to associative array tree converting test
+- Same type converting tests
+- Green line tests for other convertings
 - Source structure

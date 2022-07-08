@@ -6,7 +6,7 @@ use Tests\_support\FunctionalTestCase;
 use Vhood\TreeType\Converter;
 use Vhood\TreeType\Type\AdjacencyList;
 
-class AdjacencyListConvertionTest extends FunctionalTestCase
+class AdjacencyListConvertingTest extends FunctionalTestCase
 {
     public function testConvertToTheSame()
     {

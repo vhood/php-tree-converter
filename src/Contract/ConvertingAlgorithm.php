@@ -2,7 +2,7 @@
 
 namespace Vhood\TreeType\Contract;
 
-interface ConvertionAlgorithm
+interface ConvertingAlgorithm
 {
     /**
      * @param string $idKey

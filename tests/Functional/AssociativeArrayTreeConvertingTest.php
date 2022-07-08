@@ -6,7 +6,7 @@ use Tests\_support\FunctionalTestCase;
 use Vhood\TreeType\Converter;
 use Vhood\TreeType\Type\AssociativeArrayTree;
 
-class AssociativeArrayTreeConvertionTest extends FunctionalTestCase
+class AssociativeArrayTreeConvertingTest extends FunctionalTestCase
 {
     public function testConvertToTheSame()
     {

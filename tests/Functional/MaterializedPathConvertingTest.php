@@ -6,7 +6,7 @@ use Tests\_support\FunctionalTestCase;
 use Vhood\TreeType\Converter;
 use Vhood\TreeType\Type\MaterializedPath;
 
-class MaterializedPathConvertionTest extends FunctionalTestCase
+class MaterializedPathConvertingTest extends FunctionalTestCase
 {
     public function testConvertToTheSame()
     {

@@ -6,7 +6,7 @@ use Tests\_support\FunctionalTestCase;
 use Vhood\TreeType\Converter;
 use Vhood\TreeType\Type\NestedSet;
 
-class NestedSetConvertionTest extends FunctionalTestCase
+class NestedSetConvertingTest extends FunctionalTestCase
 {
     public function testConvertToTheSame()
     {
