@@ -91,13 +91,13 @@ class AssociativeArrayTreeConverter implements TypeConverter
 
         if (!$idKey) {
             $materializedPath =  $creator
-                ->initService($materializedPath)
+                ->initNodesService($materializedPath)
                 ->removeKeys([$identifier]);
         }
 
         if ($idKey && $idKey !== $identifier) {
             $materializedPath =  $creator
-                ->initService($materializedPath)
+                ->initNodesService($materializedPath)
                 ->renameKeys([$identifier => $idKey]);
         }
 
@@ -128,13 +128,13 @@ class AssociativeArrayTreeConverter implements TypeConverter
 
         if (!$idKey) {
             $nestedSet = $creator
-                ->initService($nestedSet)
+                ->initNodesService($nestedSet)
                 ->removeKeys([$identifier]);
         }
 
         if ($idKey && $idKey !== $identifier) {
             $nestedSet =  $creator
-                ->initService($nestedSet)
+                ->initNodesService($nestedSet)
                 ->renameKeys([$identifier => $idKey]);
         }
 

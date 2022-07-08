@@ -85,15 +85,7 @@ class NestedSetCreator extends TypeCreator
             $children = array_filter(
                 $nodes,
                 function ($node) use ($recursiveParentNode, $pathKey, $pathSeparator) {
-                    $parentPath = preg_replace(
-                        sprintf(
-                            "/(.+%s).+%s$/m",
-                            preg_quote($pathSeparator, '/'),
-                            preg_quote($pathSeparator, '/')
-                        ),
-                        "$1",
-                        $node[$pathKey]
-                    );
+                    $parentPath = $this->initNodeService($node)->findParentsPath($pathKey, $pathSeparator);
 
                     return $recursiveParentNode[$pathKey] === $parentPath
                         && $recursiveParentNode[$pathKey] !== $node[$pathKey];
@@ -140,7 +132,7 @@ class NestedSetCreator extends TypeCreator
     public function fromNestedSet($leftValueKey, $rightValueKey, $idKey, $nodes, $recursiveParentNode = null)
     {
         return $this
-            ->initService($nodes)
+            ->initNodesService($nodes)
             ->renameKeys([
                 $this->leftValueKey => $leftValueKey,
                 $this->rightValueKey => $rightValueKey

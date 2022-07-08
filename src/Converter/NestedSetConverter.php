@@ -48,7 +48,7 @@ class NestedSetConverter implements TypeConverter
 
         if ($this->idKey && $this->idKey !== $idKey) {
             $nestedSet = $creator
-                ->initService($nestedSet)
+                ->initNodesService($nestedSet)
                 ->renameKeys([$this->idKey => $idKey]);
         }
 
@@ -80,7 +80,7 @@ class NestedSetConverter implements TypeConverter
 
         if ($idKey && $idKey !== $identifier) {
             $nestedSet = $creator
-                ->initService($nestedSet)
+                ->initNodesService($nestedSet)
                 ->renameKeys([$identifier => $idKey]);
 
             $identifier = $idKey;
@@ -90,7 +90,7 @@ class NestedSetConverter implements TypeConverter
 
         if (!$idKey) {
             $materializedPath = $creator
-                ->initService($materializedPath)
+                ->initNodesService($materializedPath)
                 ->removeKeys([$identifier]);
         }
 
@@ -118,13 +118,13 @@ class NestedSetConverter implements TypeConverter
 
         if (!$idKey && $this->idKey) {
             $nestedSet = $creator
-                ->initService($nestedSet)
+                ->initNodesService($nestedSet)
                 ->removeKeys([$this->idKey]);
         }
 
         if ($idKey && $this->idKey && $idKey !== $this->idKey) {
             $nestedSet = $creator
-                ->initService($nestedSet)
+                ->initNodesService($nestedSet)
                 ->renameKeys([$this->idKey => $idKey]);
         }
 
@@ -146,11 +146,11 @@ class NestedSetConverter implements TypeConverter
         }
 
         if ($idKey && $this->idKey && $idKey !== $this->idKey) {
-            $nestedSet = $creator->initService($nestedSet)->renameKeys([$this->idKey => $idKey]);
+            $nestedSet = $creator->initNodesService($nestedSet)->renameKeys([$this->idKey => $idKey]);
         }
 
         if (!$idKey && $this->idKey) {
-            $nestedSet = $creator->initService($nestedSet)->removeKeys([$this->idKey]);
+            $nestedSet = $creator->initNodesService($nestedSet)->removeKeys([$this->idKey]);
         }
 
         return $creator->fromNestedSet($this->leftValueKey, $this->rightValueKey, $idKey, $nestedSet);

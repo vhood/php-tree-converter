@@ -58,15 +58,7 @@ class AssociativeArrayTreeCreator extends TypeCreator
             $isRoot = !$recursiveParentNode
                 && count(array_filter(explode($pathSeparator, $node[$pathKey]))) < 2;
 
-            $parentPath = preg_replace(
-                sprintf(
-                    "/(.+%s).+%s$/m",
-                    preg_quote($pathSeparator, '/'),
-                    preg_quote($pathSeparator, '/')
-                ),
-                "$1",
-                $node[$pathKey]
-            );
+            $parentPath = $this->initNodeService($node)->findParentsPath($pathKey, $pathSeparator);
 
             $isRequestedChild = $recursiveParentNode
                 && !$isRoot

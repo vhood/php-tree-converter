@@ -30,7 +30,7 @@ class AdjacencyListCreator extends TypeCreator
             return $nodes;
         }
 
-        $service = $this->initService($nodes);
+        $service = $this->initNodesService($nodes);
 
         $keyMap = [];
 

@@ -45,7 +45,7 @@ class MaterializedPathConverter implements TypeConverter
         $materializedPath = $this->nodes;
 
         if ($this->idKey && $this->idKey !== $idKey) {
-            $materializedPath = $creator->initService($this->nodes)->renameKeys([$this->idKey => $idKey]);
+            $materializedPath = $creator->initNodesService($this->nodes)->renameKeys([$this->idKey => $idKey]);
         }
 
         $adjacencyList = $creator->fromMaterializedPath($this->pathKey, $this->pathSeparator, $materializedPath);
@@ -85,7 +85,7 @@ class MaterializedPathConverter implements TypeConverter
 
         if ($levelKey && $this->levelKey && $levelKey !== $this->levelKey) {
             $materializedPath = $creator
-                ->initService($materializedPath)
+                ->initNodesService($materializedPath)
                 ->renameKeys([$this->levelKey => $levelKey]);
         }
 
@@ -96,7 +96,7 @@ class MaterializedPathConverter implements TypeConverter
 
         if ($idKey && $this->idKey && $idKey !== $this->idKey) {
             $materializedPath = $creator
-                ->initService($materializedPath)
+                ->initNodesService($materializedPath)
                 ->renameKeys([$this->idKey => $idKey]);
         }
 
@@ -128,7 +128,7 @@ class MaterializedPathConverter implements TypeConverter
 
         if ($idKey && $idKey !== $identifier) {
             $nestedSet = $creator
-                ->initService($nestedSet)
+                ->initNodesService($nestedSet)
                 ->renameKeys([$identifier => $idKey]);
         }
 
@@ -138,7 +138,7 @@ class MaterializedPathConverter implements TypeConverter
         }
 
         $nestedSet = $creator
-            ->initService($nestedSet)
+            ->initNodesService($nestedSet)
             ->removeKeys($keysToRemove);
 
         return $nestedSet;
@@ -159,11 +159,11 @@ class MaterializedPathConverter implements TypeConverter
         }
 
         if ($idKey && $this->idKey && $idKey !== $this->idKey) {
-            $materializedPath = $creator->initService($materializedPath)->renameKeys([$this->idKey => $idKey]);
+            $materializedPath = $creator->initNodesService($materializedPath)->renameKeys([$this->idKey => $idKey]);
         }
 
         if (!$idKey && $this->idKey) {
-            $materializedPath = $creator->initService($materializedPath)->removeKeys([$this->idKey]);
+            $materializedPath = $creator->initNodesService($materializedPath)->removeKeys([$this->idKey]);
         }
 
         return $creator->fromMaterializedPath($this->pathKey, $this->pathSeparator, $materializedPath);

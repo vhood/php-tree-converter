@@ -53,14 +53,14 @@ class AdjacencyListConverter implements TypeConverter
             $materializedPath = $mpService->calculateLevels($levelKey);
         }
 
-        $materializedPath = $creator->initService($materializedPath)->removeKeys([$this->parentIdKey]);
+        $materializedPath = $creator->initNodesService($materializedPath)->removeKeys([$this->parentIdKey]);
 
         if ($idKey && $idKey !== $this->idKey) {
-            $materializedPath = $creator->initService($materializedPath)->renameKeys([$this->idKey => $idKey]);
+            $materializedPath = $creator->initNodesService($materializedPath)->renameKeys([$this->idKey => $idKey]);
         }
 
         if (!$idKey) {
-            $materializedPath = $creator->initService($materializedPath)->removeKeys([$this->idKey]);
+            $materializedPath = $creator->initNodesService($materializedPath)->removeKeys([$this->idKey]);
         }
 
         return $materializedPath;
@@ -78,14 +78,14 @@ class AdjacencyListConverter implements TypeConverter
             return $firstNode[$this->idKey] > $secondNode[$this->idKey];
         });
 
-        $nestedSet = $creator->initService($nestedSet)->removeKeys([$this->parentIdKey]);
+        $nestedSet = $creator->initNodesService($nestedSet)->removeKeys([$this->parentIdKey]);
 
         if ($idKey && $idKey !== $this->idKey) {
-            $nestedSet = $creator->initService($nestedSet)->renameKeys([$this->idKey => $idKey]);
+            $nestedSet = $creator->initNodesService($nestedSet)->renameKeys([$this->idKey => $idKey]);
         }
 
         if (!$idKey) {
-            $nestedSet = $creator->initService($nestedSet)->removeKeys([$this->idKey]);
+            $nestedSet = $creator->initNodesService($nestedSet)->removeKeys([$this->idKey]);
         }
 
         return $nestedSet;
@@ -104,7 +104,7 @@ class AdjacencyListConverter implements TypeConverter
 
         if ($idKey && $idKey !== $this->idKey) {
             $adjacencyList = $creator
-                ->initService($this->nodes)
+                ->initNodesService($this->nodes)
                 ->renameKeys([$this->idKey => $idKey]);
         }
 
