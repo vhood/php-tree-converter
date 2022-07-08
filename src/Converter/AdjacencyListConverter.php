@@ -7,6 +7,7 @@ use Vhood\TreeType\Algorithm\AssociativeArrayTreeCreator;
 use Vhood\TreeType\Algorithm\MaterializedPathCreator;
 use Vhood\TreeType\Algorithm\NestedSetCreator;
 use Vhood\TreeType\Contract\TypeConverter;
+use Vhood\TreeType\Service\AssociativeArrayTreeService;
 use Vhood\TreeType\Service\MaterializedPathService;
 
 class AdjacencyListConverter implements TypeConverter
@@ -58,6 +59,10 @@ class AdjacencyListConverter implements TypeConverter
             $materializedPath = $creator->initService($materializedPath)->renameKeys([$this->idKey => $idKey]);
         }
 
+        if (!$idKey) {
+            $materializedPath = $creator->initService($materializedPath)->removeKeys([$this->idKey]);
+        }
+
         return $materializedPath;
     }
 
@@ -79,6 +84,10 @@ class AdjacencyListConverter implements TypeConverter
             $nestedSet = $creator->initService($nestedSet)->renameKeys([$this->idKey => $idKey]);
         }
 
+        if (!$idKey) {
+            $nestedSet = $creator->initService($nestedSet)->removeKeys([$this->idKey]);
+        }
+
         return $nestedSet;
     }
 
@@ -89,16 +98,23 @@ class AdjacencyListConverter implements TypeConverter
     {
         $creator = new AssociativeArrayTreeCreator($childrenKey);
 
-        $nodes = $this->nodes;
+        $adjacencyList = $this->nodes;
 
         $identifier = $idKey ? $idKey : $this->idKey;
 
         if ($idKey && $idKey !== $this->idKey) {
-            $nodes = $creator
+            $adjacencyList = $creator
                 ->initService($this->nodes)
                 ->renameKeys([$this->idKey => $idKey]);
         }
 
-        return $creator->fromAdjacencyList($identifier, $this->parentIdKey, $nodes);
+        $tree = $creator->fromAdjacencyList($identifier, $this->parentIdKey, $adjacencyList);
+
+        if (!$idKey) {
+            $treeService = new AssociativeArrayTreeService($tree, $childrenKey);
+            $tree = $treeService->removeTheField($this->idKey);
+        }
+
+        return $tree;
     }
 }

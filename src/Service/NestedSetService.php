@@ -29,7 +29,7 @@ class NestedSetService
     {
         $nodes = $this->nodes;
 
-        uasort($nodes, function ($firstNode, $secondNode) {
+        usort($nodes, function ($firstNode, $secondNode) {
             return $firstNode[$this->leftValueKey] > $secondNode[$this->leftValueKey];
         });
 

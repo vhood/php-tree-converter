@@ -54,7 +54,7 @@ class NestedSetConverter implements TypeConverter
 
         $al = $creator->fromNestedSet($this->leftValueKey, $this->rightValueKey, $idKey, $nestedSet);
 
-        uasort($al, function ($firstNode, $secondNode) use ($idKey) {
+        usort($al, function ($firstNode, $secondNode) use ($idKey) {
             return $firstNode[$idKey] > $secondNode[$idKey];
         });
 
@@ -70,7 +70,7 @@ class NestedSetConverter implements TypeConverter
 
         $nestedSet = $this->nodes;
 
-        $identifier = $idKey;
+        $identifier = $this->idKey;
 
         if (!$this->idKey) {
             $identifier = 'id';
@@ -138,17 +138,21 @@ class NestedSetConverter implements TypeConverter
     {
         $creator = new AssociativeArrayTreeCreator($childrenKey);
 
-        $nodes = $this->nodes;
+        $nestedSet = $this->nodes;
 
         if ($idKey && !$this->idKey) {
-            $nsService = new NestedSetService($nodes, $this->leftValueKey, $this->rightValueKey);
-            $nodes = $nsService->identifyNodes($idKey);
+            $nsService = new NestedSetService($nestedSet, $this->leftValueKey, $this->rightValueKey);
+            $nestedSet = $nsService->identifyNodes($idKey);
         }
 
         if ($idKey && $this->idKey && $idKey !== $this->idKey) {
-            $nodes = $creator->initService($nodes)->renameKeys([$this->idKey => $idKey]);
+            $nestedSet = $creator->initService($nestedSet)->renameKeys([$this->idKey => $idKey]);
         }
 
-        return $creator->fromNestedSet($this->leftValueKey, $this->rightValueKey, $idKey, $nodes);
+        if (!$idKey && $this->idKey) {
+            $nestedSet = $creator->initService($nestedSet)->removeKeys([$this->idKey]);
+        }
+
+        return $creator->fromNestedSet($this->leftValueKey, $this->rightValueKey, $idKey, $nestedSet);
     }
 }

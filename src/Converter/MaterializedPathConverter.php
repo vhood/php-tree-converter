@@ -42,15 +42,15 @@ class MaterializedPathConverter implements TypeConverter
     {
         $creator = new AdjacencyListCreator($idKey, $parentIdKey);
 
-        $nodes = $this->nodes;
+        $materializedPath = $this->nodes;
 
         if ($this->idKey && $this->idKey !== $idKey) {
-            $nodes = $creator->initService($this->nodes)->renameKeys([$this->idKey => $idKey]);
+            $materializedPath = $creator->initService($this->nodes)->renameKeys([$this->idKey => $idKey]);
         }
 
-        $adjacencyList = $creator->fromMaterializedPath($this->pathKey, $this->pathSeparator, $nodes);
+        $adjacencyList = $creator->fromMaterializedPath($this->pathKey, $this->pathSeparator, $materializedPath);
 
-        $mpSpecification = new MaterializedPathSpecification($nodes, $this->pathKey, $this->pathSeparator);
+        $mpSpecification = new MaterializedPathSpecification($materializedPath, $this->pathKey, $this->pathSeparator);
 
         if ($mpSpecification->areIdentifiersNumeric()) {
             $adjacencyList = array_map(
@@ -63,7 +63,10 @@ class MaterializedPathConverter implements TypeConverter
             );
         }
 
-        return $adjacencyList;
+        return array_map(function ($node) use ($idKey) {
+            uksort($node, function ($key) use ($idKey) { return $key !== $idKey; });
+            return $node;
+        }, $adjacencyList);
     }
 
     /**
@@ -119,7 +122,7 @@ class MaterializedPathConverter implements TypeConverter
 
         $nestedSet = $creator->fromMaterializedPath($this->pathKey, $this->pathSeparator, $materializedPath);
 
-        uasort($nestedSet, function ($firstNode, $secondNode) use ($identifier) {
+        usort($nestedSet, function ($firstNode, $secondNode) use ($identifier) {
             return $firstNode[$identifier] > $secondNode[$identifier];
         });
 
@@ -146,19 +149,23 @@ class MaterializedPathConverter implements TypeConverter
      */
     public function toTree($childrenKey = 'children', $idKey = null)
     {
-        $nodes = $this->nodes;
-
-        if ($idKey && !$this->idKey) {
-            $mpService = new MaterializedPathService($nodes, $this->pathKey, $this->pathSeparator);
-            $nodes = $mpService->identifyNodes($idKey);
-        }
-
         $creator = new AssociativeArrayTreeCreator($childrenKey);
 
-        if ($idKey && $this->idKey && $idKey !== $this->idKey) {
-            $nodes = $creator->initService($nodes)->renameKeys([$this->idKey => $idKey]);
+        $materializedPath = $this->nodes;
+
+        if ($idKey && !$this->idKey) {
+            $mpService = new MaterializedPathService($materializedPath, $this->pathKey, $this->pathSeparator);
+            $materializedPath = $mpService->identifyNodes($idKey);
         }
 
-        return $creator->fromMaterializedPath($this->pathKey, $this->pathSeparator, $nodes);
+        if ($idKey && $this->idKey && $idKey !== $this->idKey) {
+            $materializedPath = $creator->initService($materializedPath)->renameKeys([$this->idKey => $idKey]);
+        }
+
+        if (!$idKey && $this->idKey) {
+            $materializedPath = $creator->initService($materializedPath)->removeKeys([$this->idKey]);
+        }
+
+        return $creator->fromMaterializedPath($this->pathKey, $this->pathSeparator, $materializedPath);
     }
 }

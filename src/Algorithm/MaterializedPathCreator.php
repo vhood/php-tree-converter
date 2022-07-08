@@ -73,7 +73,7 @@ class MaterializedPathCreator extends TypeCreator
 
             $parentsPath = null;
             if (!empty($parents)) {
-                uasort($parents, function ($first, $second) use ($leftValueKey, $rightValueKey) {
+                usort($parents, function ($first, $second) use ($leftValueKey, $rightValueKey) {
                     return $first[$leftValueKey] > $second[$leftValueKey];
                 });
                 $parentsPath = implode($this->pathSeparator, array_map(function ($currentNode) use ($idKey) {

@@ -63,7 +63,7 @@ class MaterializedPathService
     {
         $needToRenameKey = $this->pathKey !== $pathKey;
 
-        return array_map(function($node) use ($pathKey, $pathSeparator, $needToRenameKey)  {
+        return array_map(function ($node) use ($pathKey, $pathSeparator, $needToRenameKey)  {
             $node[$pathKey] = str_replace($this->pathSeparator, $pathSeparator, $node[$this->pathKey]);
 
             if ($needToRenameKey) {

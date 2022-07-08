@@ -60,7 +60,7 @@ class AssociativeArrayTreeCreator extends TypeCreator
 
             $parentPath = preg_replace(
                 sprintf(
-                    "/(.+%s)\d+%s$/m",
+                    "/(.+%s).+%s$/m",
                     preg_quote($pathSeparator, '/'),
                     preg_quote($pathSeparator, '/')
                 ),
@@ -103,7 +103,7 @@ class AssociativeArrayTreeCreator extends TypeCreator
             $immediateParent = null;
 
             if ($haveParent) {
-                uasort($parents, function ($first, $second) use ($leftValueKey) {
+                usort($parents, function ($first, $second) use ($leftValueKey) {
                     return $first[$leftValueKey] < $second[$leftValueKey];
                 });
                 $immediateParent = array_shift($parents);

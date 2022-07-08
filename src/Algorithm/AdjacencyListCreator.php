@@ -89,7 +89,7 @@ class AdjacencyListCreator extends TypeCreator
             $immediateParent = null;
 
             if ($haveParent) {
-                uasort($parents, function($first, $second) use ($leftValueKey) {
+                usort($parents, function ($first, $second) use ($leftValueKey) {
                     return $first[$leftValueKey] < $second[$leftValueKey];
                 });
                 $immediateParent = array_shift($parents);

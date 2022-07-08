@@ -87,7 +87,7 @@ class NestedSetCreator extends TypeCreator
                 function ($node) use ($recursiveParentNode, $pathKey, $pathSeparator) {
                     $parentPath = preg_replace(
                         sprintf(
-                            "/(.+%s)\d+%s$/m",
+                            "/(.+%s).+%s$/m",
                             preg_quote($pathSeparator, '/'),
                             preg_quote($pathSeparator, '/')
                         ),
