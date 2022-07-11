@@ -1,4 +1,4 @@
-# PHP Tree Type Converters
+# PHP Tree Type Converter
 
 [![tests](https://img.shields.io/github/workflow/status/vhood/php-tree-converter/release)](https://github.com/vhood/php-tree-converter/actions/workflows/release.yml)
 [![version](https://img.shields.io/packagist/v/vhood/tree-converter)](https://packagist.org/packages/vhood/tree-converter)
@@ -12,9 +12,9 @@ Supported types:
 - Adjacency list
 - Materialized path
 - Nested set
-- Associative arrays
+- Associative array trees
 
-See **[data example](/tests/data/)**
+See **[data examples](/tests/_data/)**
 
 ## Installation
 
@@ -28,31 +28,105 @@ composer require vhood/tree-converter
 
 ## Usage
 
-Available methods:
-
-- `AdjacencyList::toTree()`
-- `AdjacencyList::toMaterializedPath()`
-- `AdjacencyList::toNestedSet()`
-- `MaterializedPath::toTree()`
-- `MaterializedPath::toAdjacencyList()`
-- `MaterializedPath::toNestedSet()`
-- `NestedSet::toTree()`
-- `NestedSet::toAdjacencyList()`
-- `NestedSet::toMaterializedPath()`
-- `Tree::toAdjacencyList()`
-- `Tree::toMaterializedPath()`
-- `Tree::toNestedSet()`
-
 Usage example:
 
 ```php
-use Vhood\TreeType\AdjacencyList;
+use Vhood\TreeType\Converter;
+use Vhood\TreeType\Type\AdjacencyList;
 
-$flatTree = require 'adjacency-list.php';
+$adjacencyList = [
+    [
+        'id' => 1,
+        'name' => 'node1',
+        'parent_id' => null,
+    ],
+    [
+        'id' => 2,
+        'name' => 'node2',
+        'parent_id' => 1,
+    ],
+];
 
-$converter = new AdjacencyList($flatTree);
-$associativeArrayTree = $converter->toTree();
+$adjacencyListConverter = new Converter(new AdjacencyList($adjacencyList));
+
+print_r($adjacencyListConverter->toAssociativeArrayTree('children', 'id'));
+
+// Array
+// (
+//     [0] => Array
+//         (
+//             [id] => 1
+//             [name] => node1
+//             [children] => Array
+//                 (
+//                     [0] => Array
+//                         (
+//                             [id] => 2
+//                             [name] => node2
+//                             [children] => Array
+//                                 (
+//                                 )
+
+//                         )
+
+//                 )
+
+//         )
+
+// )
 ```
+
+See **[all types](/src/Type)**
+
+### Extra functionality
+
+Materialized path level calculation example:
+
+```php
+use Vhood\TreeType\Converter;
+use Vhood\TreeType\Type\MaterializedPath;
+
+$materializedPath = [
+    [
+        'name' => 'node1',
+        'path' => '/1/',
+    ],
+    [
+        'name' => 'node2',
+        'path' => '/1/2/',
+    ],
+];
+
+$materializedPathConverter = new Converter(new MaterializedPath($materializedPath));
+
+print_r($materializedPathConverter->toMaterializedPath('path', '/', 'level'));
+
+// Array
+// (
+//     [0] => Array
+//         (
+//             [name] => node1
+//             [path] => /1/
+//             [level] => 1
+//         )
+
+//     [1] => Array
+//         (
+//             [name] => node2
+//             [path] => /1/2/
+//             [level] => 2
+//         )
+
+// )
+```
+
+Other features:
+
+- nodes identification
+- keys renaming
+- keys removing
+
+See the **[converting interface](/src/Contract/TypeConverter.php)**
 
 ---
 
