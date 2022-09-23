@@ -4,7 +4,7 @@ namespace Tests\_support;
 
 use PHPUnit\Framework\TestCase;
 
-class FunctionalTestCase extends TestCase
+class IntegrationTestCase extends TestCase
 {
     private $numBasedNodesPath = __DIR__ . '/../_data/num-based-nodes.php';
     private $slugBasedNodesPath = __DIR__ . '/../_data/slug-based-nodes.php';
