@@ -30,7 +30,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Tree: children count
 - MP: parent path search regexp
 
-
 ### Added
 
 - `$noParentValue` parameter for MP to AL converting

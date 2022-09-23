@@ -31,7 +31,6 @@
             "email": "dev.999.victor@gmail.com"
         }
     ],
-    "minimum-stability": "dev",
     "require": {
         "php": ">=5.6"
     },
