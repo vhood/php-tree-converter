@@ -1,12 +1,12 @@
 <?php
 
-namespace Tests\Functional;
+namespace Tests\Integration;
 
-use Tests\_support\FunctionalTestCase;
+use Tests\_support\IntegrationTestCase;
 use Vhood\TreeType\Converter;
 use Vhood\TreeType\Type\MaterializedPath;
 
-class MaterializedPathConvertingTest extends FunctionalTestCase
+class MaterializedPathConvertingTest extends IntegrationTestCase
 {
     public function testConvertToTheSame()
     {

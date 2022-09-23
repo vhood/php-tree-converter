@@ -1,12 +1,12 @@
 <?php
 
-namespace Tests\Functional;
+namespace Tests\Integration;
 
-use Tests\_support\FunctionalTestCase;
+use Tests\_support\IntegrationTestCase;
 use Vhood\TreeType\Converter;
 use Vhood\TreeType\Type\NestedSet;
 
-class NestedSetConvertingTest extends FunctionalTestCase
+class NestedSetConvertingTest extends IntegrationTestCase
 {
     public function testConvertToTheSame()
     {
