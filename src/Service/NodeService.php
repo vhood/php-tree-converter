@@ -15,6 +15,7 @@ class NodeService
      * @param string $pathKey
      * @param string $pathSeparator
      * @return string
+     * @uses O(1) big O notation for the runtime
      */
     public function findParentsPath($pathKey, $pathSeparator)
     {

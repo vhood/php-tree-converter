@@ -19,6 +19,7 @@ class AssociativeArrayTreeCreator extends TypeCreator
 
     /**
      * {@inheritdoc}
+     * @uses O(n+m) big O notation for the runtime
      */
     public function fromAdjacencyList($idKey, $parentIdKey, $nodes, $recursiveParentNode = null)
     {
@@ -45,6 +46,7 @@ class AssociativeArrayTreeCreator extends TypeCreator
 
     /**
      * {@inheritdoc}
+     * @uses O(n+m) big O notation for the runtime
      */
     public function fromMaterializedPath($pathKey, $pathSeparator, $nodes, $recursiveParentNode = null)
     {
@@ -78,6 +80,7 @@ class AssociativeArrayTreeCreator extends TypeCreator
 
     /**
      * {@inheritdoc}
+     * @uses O(n²) big O notation for the runtime
      */
     public function fromNestedSet($leftValueKey, $rightValueKey, $idKey, $nodes, $recursiveParentNode = null)
     {
@@ -132,6 +135,7 @@ class AssociativeArrayTreeCreator extends TypeCreator
      * @param string $childrenKey $nodes children key
      * @var $idKey not used
      * @var $recursiveParentNode not used
+     * @uses O(1) big O notation for the runtime
      */
     public function fromTree($childrenKey, $idKey, $nodes, $recursiveParentNode = null)
     {

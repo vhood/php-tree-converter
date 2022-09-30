@@ -18,6 +18,7 @@ class FlatNodesService
     /**
      * @param array $keyMap ['currentKey' => 'newKey', 'currentKey' => 'newKey']
      * @return array $nodes
+     * @uses O(1) big O notation for the runtime
      */
     public function renameKeys(array $keyMap)
     {
@@ -37,6 +38,7 @@ class FlatNodesService
     /**
      * @param array $keys
      * @return array $nodes
+     * @uses O(n) big O notation for the runtime
      */
     public function removeKeys(array $keys)
     {
