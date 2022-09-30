@@ -24,6 +24,7 @@ class NestedSetService
     /**
      * @param string $idKey
      * @return array
+     * @uses O(n) big O notation for the runtime
      */
     public function identifyNodes($idKey = 'id')
     {

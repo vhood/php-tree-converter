@@ -26,6 +26,7 @@ class MaterializedPathService
     /**
      * @param string $idKey
      * @return array
+     * @uses O(n) big O notation for the runtime
      */
     public function identifyNodes($idKey)
     {
@@ -58,6 +59,7 @@ class MaterializedPathService
      * @param string $pathKey
      * @param string $pathSeparator
      * @return array
+     * @uses O(n) big O notation for the runtime
      */
     public function rebuildPath($pathKey, $pathSeparator)
     {
@@ -77,6 +79,7 @@ class MaterializedPathService
     /**
      * @param array $node
      * @return int
+     * @uses O(n) big O notation for the runtime
      */
     public function calculateChildren($node)
     {
@@ -93,6 +96,7 @@ class MaterializedPathService
     /**
      * @param string $levelKey
      * @return array
+     * @uses O(n) big O notation for the runtime
      */
     public function calculateLevels($levelKey)
     {

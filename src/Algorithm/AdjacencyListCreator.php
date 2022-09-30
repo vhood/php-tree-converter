@@ -23,6 +23,7 @@ class AdjacencyListCreator extends TypeCreator
      * @param string $idKey $nodes id key
      * @param string $parentIdKey $nodes parentId key
      * @var $recursiveParentNode not used
+     * @uses O(1) big O notation for the runtime
      */
     public function fromAdjacencyList($idKey, $parentIdKey, $nodes, $recursiveParentNode = null)
     {
@@ -48,6 +49,7 @@ class AdjacencyListCreator extends TypeCreator
     /**
      * {@inheritdoc}
      * @var $recursiveParentNode not used
+     * @uses O(n) big O notation for the runtime
      */
     public function fromMaterializedPath($pathKey, $pathSeparator, $nodes, $recursiveParentNode = null)
     {
@@ -74,6 +76,7 @@ class AdjacencyListCreator extends TypeCreator
     /**
      * {@inheritdoc}
      * @var $recursiveParentNode not used
+     * @uses O(n²) big O notation for the runtime
      */
     public function fromNestedSet($leftValueKey, $rightValueKey, $idKey, $nodes, $recursiveParentNode = null)
     {
@@ -107,6 +110,7 @@ class AdjacencyListCreator extends TypeCreator
 
     /**
      * {@inheritdoc}
+     * @uses O(n) big O notation for the runtime
      */
     public function fromTree($childrenKey, $idKey, $nodes, $recursiveParentNode = null)
     {

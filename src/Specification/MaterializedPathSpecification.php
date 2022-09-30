@@ -23,6 +23,7 @@ class MaterializedPathSpecification
 
     /**
      * @return bool
+     * @uses O(n) big O notation for the runtime
      */
     public function areIdentifiersNumeric()
     {

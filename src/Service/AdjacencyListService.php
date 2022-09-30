@@ -25,6 +25,7 @@ class AdjacencyListService
      * @param array $node
      * @param string $pathSeparator
      * @return string path
+     * @uses O(n) big O notation for the runtime
      */
     public function buildNodePath($node, $pathSeparator)
     {
@@ -46,6 +47,7 @@ class AdjacencyListService
     /**
      * @param array $node
      * @return int
+     * @uses O(n) big O notation for the runtime
      */
     public function calculateChildren($node)
     {

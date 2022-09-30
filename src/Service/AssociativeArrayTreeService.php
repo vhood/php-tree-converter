@@ -25,6 +25,7 @@ class AssociativeArrayTreeService
      * @param null|array $recursiveNodes
      * @return void
      * @throws InvalidStructureException
+     * @uses O(n) big O notation for the runtime
      */
     public function validateIdField($idKey, $recursiveNodes = null)
     {
@@ -50,6 +51,7 @@ class AssociativeArrayTreeService
      * @param string $idKey
      * @param null|string $recursiveParentNode
      * @return array
+     * @uses O(n) big O notation for the runtime
      */
     public function identifyNodes($idKey, $recursiveParentNode = null)
     {
@@ -75,6 +77,7 @@ class AssociativeArrayTreeService
      * @param string $fieldKey
      * @param null|string $recursiveParentNode
      * @return array
+     * @uses O(n) big O notation for the runtime
      */
     public function removeTheField($fieldKey, $recursiveParentNode = null)
     {
@@ -98,6 +101,7 @@ class AssociativeArrayTreeService
      * @param string $currentKey
      * @param string $newKey
      * @return array
+     * @uses O(1) big O notation for the runtime
      */
     public function renameTheKey($currentKey, $newKey)
     {
