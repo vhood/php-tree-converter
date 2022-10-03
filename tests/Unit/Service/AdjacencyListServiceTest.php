@@ -69,32 +69,102 @@ class AdjacencyListServiceTest extends TestCase
         ];
     }
 
+    public function testListNumBasedNodeParents()
+    {
+        $expected = [
+            2 => [
+                'id' => 3,
+                'parent_id' => 1,
+                'name' => 'node3',
+            ],
+            3 => [
+                'id' => 1,
+                'parent_id' => null,
+                'name' => 'node1',
+            ],
+            4 => [
+                'id' => 3,
+                'parent_id' => 1,
+                'name' => 'node3',
+            ],
+            5 => [
+                'id' => 4,
+                'parent_id' => 3,
+                'name' => 'node4',
+            ],
+        ];
+
+        $service = new AdjacencyListService($this->numBasedNodes, 'id', 'parent_id');
+
+        $this->assertSame(
+            json_encode($expected),
+            json_encode($service->listParents())
+        );
+    }
+
+    public function testListSlugBasedNodeParents()
+    {
+        $expectedMap = [
+            'two' => [
+                'id' => 'three',
+                'parent_id' => 'one',
+                'name' => 'node3',
+            ],
+            'three' => [
+                'id' => 'one',
+                'parent_id' => null,
+                'name' => 'node1',
+            ],
+            'four' => [
+                'id' => 'three',
+                'parent_id' => 'one',
+                'name' => 'node3',
+            ],
+            'five' => [
+                'id' => 'four',
+                'parent_id' => 'three',
+                'name' => 'node4',
+            ],
+        ];
+
+        $service = new AdjacencyListService($this->slugBasedNodes, 'id', 'parent_id');
+
+        $this->assertSame(
+            json_encode($expectedMap),
+            json_encode($service->listParents())
+        );
+    }
+
     public function testNumBasedParentPathBuilding()
     {
         $service = new AdjacencyListService($this->numBasedNodes, 'id', 'parent_id');
+        $parentsMap = $service->listParents();
 
-        $this->assertSame('/1', $service->buildNodePath($this->numBasedNodes['first'], '/'));
+        $this->assertSame('/1', $service->buildNodePath($this->numBasedNodes['first'], '/', $parentsMap));
     }
 
     public function testNumBasedChildrenPathBuilding()
     {
         $service = new AdjacencyListService($this->numBasedNodes, 'id', 'parent_id');
+        $parentsMap = $service->listParents();
 
-        $this->assertSame('/1/3/4/5', $service->buildNodePath($this->numBasedNodes['last'], '/'));
+        $this->assertSame('/1/3/4/5', $service->buildNodePath($this->numBasedNodes['last'], '/', $parentsMap));
     }
 
     public function testSlugBasedParentPathBuilding()
     {
         $service = new AdjacencyListService($this->slugBasedNodes, 'id', 'parent_id');
+        $parentsMap = $service->listParents();
 
-        $this->assertSame('/one', $service->buildNodePath($this->slugBasedNodes['first'], '/'));
+        $this->assertSame('/one', $service->buildNodePath($this->slugBasedNodes['first'], '/', $parentsMap));
     }
 
     public function testSlugBasedChildrenPathBuilding()
     {
         $service = new AdjacencyListService($this->slugBasedNodes, 'id', 'parent_id');
+        $parentsMap = $service->listParents();
 
-        $this->assertSame('/one/three/four/five', $service->buildNodePath($this->slugBasedNodes['last'], '/'));
+        $this->assertSame('/one/three/four/five', $service->buildNodePath($this->slugBasedNodes['last'], '/', $parentsMap));
     }
 
     public function testCalculateNumBasedParentNodeChildren()

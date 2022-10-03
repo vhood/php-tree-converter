@@ -24,21 +24,24 @@ class MaterializedPathCreator extends TypeCreator
     /**
      * {@inheritdoc}
      * @var $recursiveParentNode not used
-     * @uses O(n²) big O notation for the runtime
+     * @uses O(n) big O notation for the runtime
      */
     public function fromAdjacencyList($idKey, $parentIdKey, $nodes, $recursiveParentNode = null)
     {
         $alService = new AdjacencyListService($nodes, $idKey, $parentIdKey);
+        $parentsMap = $alService->listParents();
 
-        return array_map(function ($node) use ($alService) {
+        $materializedPath = array_map(function ($node) use ($alService, $parentsMap) {
             $node[$this->pathKey] = sprintf(
                 '%s%s',
-                $alService->buildNodePath($node, $this->pathSeparator),
+                $alService->buildNodePath($node, $this->pathSeparator, $parentsMap),
                 $this->pathSeparator
             );
 
             return $node;
         }, $nodes);
+
+        return $materializedPath;
     }
 
     /**
