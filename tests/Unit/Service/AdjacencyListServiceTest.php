@@ -135,6 +135,13 @@ class AdjacencyListServiceTest extends TestCase
         );
     }
 
+    public function testPathBuildingBackwardCompatibility()
+    {
+        $service = new AdjacencyListService($this->numBasedNodes, 'id', 'parent_id');
+
+        $this->assertSame('/1/3/4/5', $service->buildNodePath($this->numBasedNodes['last'], '/'));
+    }
+
     public function testNumBasedParentPathBuilding()
     {
         $service = new AdjacencyListService($this->numBasedNodes, 'id', 'parent_id');
