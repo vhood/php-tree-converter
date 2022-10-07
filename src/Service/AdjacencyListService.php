@@ -24,13 +24,17 @@ class AdjacencyListService
     /**
      * @param array $node
      * @param string $pathSeparator
-     * @param array $parentsMap @see listParents()
+     * @param null|array $parentsMap for a faster build, @see listParents()
      * @return string path
-     * @uses O(1) big O notation for the runtime
+     * @uses O(n)|O(1) big O notation for the runtime
      */
-    public function buildNodePath($node, $pathSeparator, $parentsMap)
+    public function buildNodePath($node, $pathSeparator, $parentsMap = null)
     {
         $path = '';
+
+        if (is_null($parentsMap)) {
+            return $this->deprecatedPathBuilding($node, $pathSeparator);
+        }
 
         if (array_key_exists($node[$this->idKey], $parentsMap)) {
             $path .= $this->buildNodePath($parentsMap[$node[$this->idKey]], $pathSeparator, $parentsMap);
@@ -83,5 +87,30 @@ class AdjacencyListService
         }
 
         return $children;
+    }
+
+    /**
+     * @deprecated
+     *
+     * @param mixed $node
+     * @param mixed $pathSeparator
+     * @return string $path
+     * @uses O(n) big O notation for the runtime
+     */
+    private function deprecatedPathBuilding($node, $pathSeparator)
+    {
+        $path = '';
+
+        foreach ($this->nodes as $iterableNode) {
+            if ($node[$this->parentIdKey] !== $iterableNode[$this->idKey]) {
+                continue;
+            }
+
+            $path .= $this->deprecatedPathBuilding($iterableNode, $pathSeparator);
+        }
+
+        $path .= $pathSeparator . $node[$this->idKey];
+
+        return $path;
     }
 }
